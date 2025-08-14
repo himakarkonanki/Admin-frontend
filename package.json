@@ -1,0 +1,44 @@
+{
+  "name": "admin-frontend",
+  "homepage": "https://himakarkonanki.github.io/Admin-frontend/",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "predeploy":"npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@editorjs/editorjs": "^2.30.8",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/nested-list": "^1.4.3",
+    "@editorjs/paragraph": "^2.11.7",
+    "@editorjs/table": "^2.4.5",
+    "@tailwindcss/vite": "^4.1.11",
+    "date-fns": "^4.1.0",
+    "editorjs-multiblock-selection-plugin": "^0.1.2",
+    "gh-pages": "^6.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-editor-js": "^2.1.0",
+    "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "vite": "^7.0.0"
+  }
+}
