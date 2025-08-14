@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import FrontPage from './FrontPage';
 import undo from '../assets/icons/undo.svg';
 import redo from '../assets/icons/redo.svg';
-import eye from '../assets/icons/visibility.svg';
 import download from '../assets/icons/download.svg';
 import forward from '../assets/icons/arrow_forward_ios.svg';
 import DayPage from './DayPage';
@@ -504,8 +503,6 @@ const handleRedo = useCallback(async () => {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{...buttonWrapper, cursor: 'pointer'}} onClick={handlePreviewClick}>
-              <img style={icon} src={eye} alt="visibility" draggable={false} />
-              <div style={divider}></div>
               <div style={label}>Preview</div>
             </div>
           </div>
@@ -644,7 +641,6 @@ const label = {
   fontSize: '14px',
   fontWeight: 500,
   lineHeight: '20px',
-  textTransform: 'uppercase',
   userSelect: 'none',
 };
 
