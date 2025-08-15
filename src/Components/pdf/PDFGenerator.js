@@ -19,7 +19,7 @@ export class PDFGenerator {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 100000); // 60 second timeout
 
-            const apiUrl = import.meta.env.PDF_API_URL || 'http://localhost:5000/api/generate-pdf';
+            const apiUrl = import.meta.env.VITE_PDF_API_URL || 'http://localhost:5000/api/generate-pdf';
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
