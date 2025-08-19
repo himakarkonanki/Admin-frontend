@@ -1,20 +1,23 @@
 // ImageUpload.js
 import React, { useState, useRef } from 'react';
+import closeIcon from '../assets/icons/close.svg';
 import upload_image from '../assets/icons/upload_image.svg';
 
-function ImageUpload({ onImageUpload, existingImage, heightReduction = 0 }) {
+function ImageUpload({ onImageUpload, existingImage, heightReduction = 0, onRemove }) {
     const [dragActive, setDragActive] = useState(false);
     const [uploadedImage, setUploadedImage] = useState(existingImage || null);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
 
-    // Calculate responsive height
-    const baseHeight = 584;
-    const calculatedHeight = Math.max(284, baseHeight - heightReduction);
-    
-    // Calculate inner content height proportionally
-    const innerBaseHeight = 520;
-    const innerCalculatedHeight = Math.max(220, innerBaseHeight - heightReduction);
+    // If parent wants to remove this section, call onRemove
+    const handleRemove = (e) => {
+        e.stopPropagation();
+        if (onRemove) onRemove();
+    };
+
+    // Fixed dimensions, match details section width (820px)
+    const containerWidth = 820;
+    const containerHeight = 300;
 
     const handleFiles = (files) => {
         const file = files[0];
@@ -81,61 +84,79 @@ function ImageUpload({ onImageUpload, existingImage, heightReduction = 0 }) {
         <div
             style={{
                 display: 'flex',
-                width: '1088px',
-                height: `${calculatedHeight}px`,
+                width: `${containerWidth}px`,
+                height: `${containerHeight}px`,
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexShrink: 0,
-                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.00) 24.03%, rgba(243, 63, 63, 0.06) 100%)',
-                borderRadius: '32px 32px 0 0',
+                background: uploadedImage
+                    ? '#fff'
+                    : 'linear-gradient(180deg, rgba(255,255,255,0.00) 24.03%, rgba(243,63,63,0.06) 100%)',
+                borderRadius: '24px',
+                boxShadow: uploadedImage ? '0 4px 24px 0 rgba(0,0,0,0.10)' : 'none',
+                overflow: 'hidden',
+                margin: '0 auto',
+                position: 'relative',
             }}
         >
+            {/* Close Icon Button */}
+            <button
+                onClick={handleRemove}
+                style={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    background: 'rgba(255,255,255,0.8)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 2,
+                    boxShadow: '0 2px 8px 0 rgba(0,0,0,0.10)'
+                }}
+                aria-label="Remove image upload section"
+            >
+                <img src={closeIcon} alt="close" style={{ width: 18, height: 18 }} />
+            </button>
             {uploadedImage ? (
-                <div
+                <img
+                    src={uploadedImage}
+                    alt="Uploaded preview"
                     style={{
-                        display: 'flex',
-                        width: '1088px',
-                        height: `${calculatedHeight}px`,
-                        cursor: 'pointer',
-                        position: 'relative',
-                        borderRadius: '32px 32px 0 0',
-                        overflow: 'hidden',
+                        width: `${containerWidth}px`,
+                        height: `${containerHeight}px`,
+                        objectFit: 'cover',
+                        borderRadius: '24px',
+                        display: 'block',
                     }}
                     onClick={openFileDialog}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
-                >
-                    <img
-                        src={uploadedImage}
-                        alt="Uploaded preview"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            borderRadius: '32px 32px 0 0',
-                        }}
-                    />
-                </div>
+                />
             ) : (
                 <div
                     style={{
                         display: 'flex',
-                        width: '1024px',
-                        height: `${innerCalculatedHeight}px`,
-                        padding: '24px 40px',
+                        width: `${containerWidth}px`,
+                        height: `${containerHeight}px`,
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        gap: '32px',
-                        flexShrink: 0,
-                        borderRadius: '12px',
+                        gap: '24px',
                         border: dragActive
-                            ? '2px solid rgba(243, 63, 63, 1)'
-                            : '1px dashed rgba(243, 63, 63, 0.64)',
-                        backgroundColor: dragActive ? 'rgba(243, 63, 63, 0.05)' : 'transparent',
+                            ? '2px solid #F33F3F'
+                            : '1.5px dashed #F3A3A3',
+                        background: dragActive ? 'rgba(243,63,63,0.04)' : 'transparent',
                         cursor: 'pointer',
+                        borderRadius: '24px',
+                        transition: 'border 0.2s, background 0.2s',
+                        position: 'relative',
                     }}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
@@ -173,9 +194,14 @@ function ImageUpload({ onImageUpload, existingImage, heightReduction = 0 }) {
                                 width: '64px',
                                 height: '64px',
                                 flexShrink: 0,
-                                aspectRatio: '1 / 1',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: '#fff',
+                                borderRadius: '16px',
+                                boxShadow: '0 2px 8px 0 rgba(243, 63, 63, 0.10)',
                             }}>
-                                <img src={upload_image} alt='upload-icon' />
+                                <img src={upload_image} alt='upload-icon' style={{ width: '40px', height: '40px' }} />
                             </div>
                             <div style={{
                                 display: 'flex',
@@ -239,3 +265,4 @@ function ImageUpload({ onImageUpload, existingImage, heightReduction = 0 }) {
 }
 
 export default ImageUpload;
+

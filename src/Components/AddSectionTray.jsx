@@ -4,7 +4,7 @@ import add from '../assets/icons/add_circle_blue.svg';
 import close from '../assets/icons/close.svg';
 import hotel from '../assets/icons/hotel.svg';
 import fork_spoon from '../assets/icons/fork_spoon.svg';
-import table from '../assets/icons/table.svg';
+import image from '../assets/icons/image.svg';
 import interest from '../assets/icons/interests_blue.svg';
 import taxi from '../assets/icons/local_taxi_blue.svg';
 
@@ -13,6 +13,7 @@ const ICON_OPTIONS = {
     Hotel: hotel,
     CarFront: taxi,
     Landmark: interest,
+    Image: image,
 };
 
 const SECTION_OPTIONS = [
@@ -20,6 +21,7 @@ const SECTION_OPTIONS = [
     { value: 'Hotel', label: 'Hotel', heading: 'Hotel' },
     { value: 'Landmark', label: 'Activity', heading: 'Activities' },
     { value: 'CarFront', label: 'Car', heading: 'Transfer' },
+    { value: 'Image', label: 'Image', heading: 'Image' },
 ];
 
 function AddSectionTray({ onAddSection }) {
@@ -43,7 +45,7 @@ function AddSectionTray({ onAddSection }) {
             id: Date.now(),
             type: sectionType,
             heading: selectedOption.heading,
-            details: '',
+            details: [''],
             icon: sectionType
         };
         onAddSection(newSection);

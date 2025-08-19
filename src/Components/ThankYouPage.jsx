@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import _path from '../assets/icons/_Path_.svg';
 import Thankyou from '../assets/icons/Thankthumbnail.svg';
 import Footer from './Footer';
+import instagram from '../assets/icons/Instagram.svg';
+import facebook from '../assets/icons/Facebook.svg';
 
 const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = false, totalPages }) => {
     const [base64Image, setBase64Image] = useState('');
     const [localData, setLocalData] = useState({
         thankYouTitle: '',
         thankYouMessage: '',
-        phoneNumber: '',
-        emailAddress: '',
-        websiteOrInstagram: ''
+        phoneNumber: '(+91) 7305273554',
+        emailAddress: 'sales@routeyourtravel.com',
+        websiteOrInstagram: 'www.routeyourtravel.com'
     });
 
     // Sync local state with pageData
@@ -19,14 +20,12 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
             setLocalData({
                 thankYouTitle: pageData.thankYouTitle || '',
                 thankYouMessage: pageData.thankYouMessage || '',
-                phoneNumber: pageData.phoneNumber || '',
-                emailAddress: pageData.emailAddress || '',
-                websiteOrInstagram: pageData.websiteOrInstagram || ''
+                phoneNumber: pageData.phoneNumber || '(+91) 7305273554',
+                emailAddress: pageData.emailAddress || 'sales@routeyourtravel.com',
+                websiteOrInstagram: pageData.websiteOrInstagram || 'www.routeyourtravel.com'
             });
         }
     }, [pageData]);
-
-
 
     useEffect(() => {
         fetch(Thankyou)
@@ -57,18 +56,13 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
     const uniqueId = pageId || `thankyou-${pageNumber || Date.now()}`;
     const titleId = `thankYouTitle-${uniqueId}`;
     const messageId = `thankYouMessage-${uniqueId}`;
-    const phoneId = `phoneNumber-${uniqueId}`;
-    const emailId = `emailAddress-${uniqueId}`;
-    const websiteId = `websiteOrInstagram-${uniqueId}`;
 
     return (
-
         <div style={{
             width: '1088px',
             height: '1540px',
             flexShrink: 0,
             aspectRatio: '272 / 385',
-
         }}>
             <div // wrap
                 style={{
@@ -83,7 +77,6 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                     flexShrink: 0,
                     background: '#0E1328',
                     position: 'relative',
-
                 }}
             >
                 <div
@@ -122,7 +115,6 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                         >
                             {/* Page indicator or label can go here if needed */}
                         </div>
-
                         <div
                             style={{ // cover title
                                 display: 'flex',
@@ -174,7 +166,6 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                             )}
                         </div>
                     </div>
-
                     {/* Message Section */}
                     <div // Details
                         style={{
@@ -236,7 +227,6 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                             )}
                         </div>
                     </div>
-
                     {/* Contact Details Section */}
                     <div
                         style={{
@@ -258,188 +248,134 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                                 background: 'rgba(255, 255, 255, 0.12)',
                             }}
                         />
-
-                        {/* Contact Details - Individual Fields */}
                         <div
-                            style={{ // footer details
+                            style={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'flex-start',
-                                gap: '8px',
+                                gap: '0px',
                                 alignSelf: 'stretch',
-                                opacity: 0.42,
                             }}
                         >
-                            {/* Phone Number Field */}
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    alignSelf: 'stretch',
-                                }}
-                            >
-                                {isPreview ? (
-                                    localData.phoneNumber ? (
-                                        <div style={{
-                                            color: 'rgba(255, 255, 255, 0.7)',
-                                            fontFamily: 'Lato',
-                                            fontSize: '24px',
-                                            fontStyle: 'italic',
-                                            fontWeight: 400,
-                                            lineHeight: '36px',
-                                            flex: '1 0 0',
-                                            wordWrap: 'break-word',
-                                            whiteSpace: 'pre-wrap'
-                                        }}>
-                                            {localData.phoneNumber}
-                                        </div>
-                                    ) : null
-                                ) : (
+                            {isPreview ? (
+                                <>
+                                    <div style={{
+                                        color: 'rgba(255, 255, 255, 0.50)',
+                                        fontFamily: 'Lato',
+                                        fontSize: '20px',
+                                        fontStyle: 'italic',
+                                        fontWeight: 400,
+                                        lineHeight: '32px',
+                                        marginBottom: '0px',
+                                    }}>{localData.phoneNumber}</div>
+                                    <div style={{
+                                        color: 'rgba(255, 255, 255, 0.50)',
+                                        fontFamily: 'Lato',
+                                        fontSize: '20px',
+                                        fontStyle: 'italic',
+                                        fontWeight: 400,
+                                        lineHeight: '32px',
+                                        marginBottom: '0px',
+                                    }}>{localData.emailAddress}</div>
+                                    <div style={{
+                                        color: 'rgba(255, 255, 255, 0.50)',
+                                        fontFamily: 'Lato',
+                                        fontSize: '20px',
+                                        fontStyle: 'italic',
+                                        fontWeight: 400,
+                                        lineHeight: '32px',
+                                        marginBottom: '0px',
+                                    }}>{localData.websiteOrInstagram}</div>
+                                </>
+                            ) : (
+                                <>
                                     <input
                                         type="text"
-                                        id={phoneId}
                                         value={localData.phoneNumber}
-                                        onChange={(e) => handleDataChange('phoneNumber', e.target.value)}
-                                        placeholder="[Phone Number]"
+                                        onChange={e => handleDataChange('phoneNumber', e.target.value)}
                                         style={{
-                                            color: localData.phoneNumber ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.50)',
+                                            color: 'rgba(255, 255, 255, 0.50)',
                                             fontFamily: 'Lato',
-                                            fontSize: '24px',
+                                            fontSize: '20px',
                                             fontStyle: 'italic',
                                             fontWeight: 400,
-                                            lineHeight: '36px',
-                                            flex: '1 0 0',
+                                            lineHeight: '32px',
+                                            marginBottom: '0px',
+                                            background: 'transparent',
                                             border: 'none',
                                             outline: 'none',
-                                            background: 'transparent',
+                                            width: '100%',
+                                            padding: 0,
                                         }}
                                     />
-                                )}
-                            </div>
-
-                            {/* Email Address Field */}
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    alignSelf: 'stretch',
-                                }}
-                            >
-                                {isPreview ? (
-                                    localData.emailAddress ? (
-                                        <div style={{
-                                            color: 'rgba(255, 255, 255, 0.7)',
-                                            fontFamily: 'Lato',
-                                            fontSize: '24px',
-                                            fontStyle: 'italic',
-                                            fontWeight: 400,
-                                            lineHeight: '36px',
-                                            flex: '1 0 0',
-                                            wordWrap: 'break-word',
-                                            whiteSpace: 'pre-wrap'
-                                        }}>
-                                            {localData.emailAddress}
-                                        </div>
-                                    ) : null
-                                ) : (
-                                    <input
-                                        type="email"
-                                        id={emailId}
-                                        value={localData.emailAddress}
-                                        onChange={(e) => handleDataChange('emailAddress', e.target.value)}
-                                        placeholder="[Email Address]"
-                                        style={{
-                                            color: localData.emailAddress ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.50)',
-                                            fontFamily: 'Lato',
-                                            fontSize: '24px',
-                                            fontStyle: 'italic',
-                                            fontWeight: 400,
-                                            lineHeight: '36px',
-                                            flex: '1 0 0',
-                                            border: 'none',
-                                            outline: 'none',
-                                            background: 'transparent',
-                                        }}
-                                    />
-                                )}
-                            </div>
-
-                            {/* Website or Instagram Handle Field */}
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    alignSelf: 'stretch',
-                                }}
-                            >
-                                {isPreview ? (
-                                    localData.websiteOrInstagram ? (
-                                        <div style={{
-                                            color: 'rgba(255, 255, 255, 0.7)',
-                                            fontFamily: 'Lato',
-                                            fontSize: '24px',
-                                            fontStyle: 'italic',
-                                            fontWeight: 400,
-                                            lineHeight: '36px',
-                                            flex: '1 0 0',
-                                            wordWrap: 'break-word',
-                                            whiteSpace: 'pre-wrap'
-                                        }}>
-                                            {localData.websiteOrInstagram}
-                                        </div>
-                                    ) : null
-                                ) : (
                                     <input
                                         type="text"
-                                        id={websiteId}
-                                        value={localData.websiteOrInstagram}
-                                        onChange={(e) => handleDataChange('websiteOrInstagram', e.target.value)}
-                                        placeholder="[Website or Instagram Handle]"
+                                        value={localData.emailAddress}
+                                        onChange={e => handleDataChange('emailAddress', e.target.value)}
                                         style={{
-                                            color: localData.websiteOrInstagram ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.50)',
+                                            color: 'rgba(255, 255, 255, 0.50)',
                                             fontFamily: 'Lato',
-                                            fontSize: '24px',
+                                            fontSize: '20px',
                                             fontStyle: 'italic',
                                             fontWeight: 400,
-                                            lineHeight: '36px',
-                                            flex: '1 0 0',
+                                            lineHeight: '32px',
+                                            marginBottom: '0px',
+                                            background: 'transparent',
                                             border: 'none',
                                             outline: 'none',
-                                            background: 'transparent',
+                                            width: '100%',
+                                            padding: 0,
                                         }}
                                     />
-                                )}
-                            </div>
+                                    <input
+                                        type="text"
+                                        value={localData.websiteOrInstagram}
+                                        onChange={e => handleDataChange('websiteOrInstagram', e.target.value)}
+                                        style={{
+                                            color: 'rgba(255, 255, 255, 0.50)',
+                                            fontFamily: 'Lato',
+                                            fontSize: '20px',
+                                            fontStyle: 'italic',
+                                            fontWeight: 400,
+                                            lineHeight: '32px',
+                                            marginBottom: '0px',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            outline: 'none',
+                                            width: '100%',
+                                            padding: 0,
+                                        }}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
+                    <div style={{
+                        display: 'flex',
+                        paddingLeft: '16px',
+                        alignItems: 'center',
+                        gap: '18px',
+                    }}>
+                        
+                        <img src={facebook} style={{width: '14px', height: '24px', aspectRatio: '7/12'}} alt="Facebook" />
+                        <img src={instagram} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="Instagram" />
+                    </div>
                 </div>
-
                 <div style={{
                     width: '1090px',
                     height: '685px',
                     boxSizing: 'border-box',
                     marginTop: '700px',
-                    // marginBottom: '70.5px',
-                    // // marginLeft: '-100px',
-                    // // marginRight: '-90px',
                     overflow: 'hidden',
                     position: 'relative'
                 }}>
                     {base64Image && (
                         <img src={base64Image} alt="Thank You" />
                     )}
-
                 </div>
-
                 {/* Footer - UPDATED: Pass totalPages or calculate correct page number */}
                 <Footer pageNumber={totalPages || pageNumber} />
             </div>
-
-
-
         </div>
     );
 };

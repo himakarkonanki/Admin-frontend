@@ -503,7 +503,7 @@ const handleRedo = useCallback(async () => {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{...buttonWrapper, cursor: 'pointer'}} onClick={handlePreviewClick}>
-              <div style={label}>Preview</div>
+              <div style={label}>Preview & Download</div>
             </div>
           </div>
         </div>
@@ -639,7 +639,7 @@ const label = {
   color: '#0E1328',
   fontFamily: 'Lato',
   fontSize: '14px',
-  fontWeight: 500,
+  fontWeight: 600,
   lineHeight: '20px',
   userSelect: 'none',
 };
@@ -658,7 +658,7 @@ const sectionTitle = {
   color: 'rgba(14, 19, 40, 0.80)',
   fontFamily: 'Lato',
   fontSize: '18px',
-  fontWeight: 400,
+  fontWeight: 600,
   lineHeight: '27px',
   userSelect: 'none',
 };
