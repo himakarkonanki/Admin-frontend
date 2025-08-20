@@ -343,7 +343,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
     const removeSection = (sectionId) => {
         const updatedSections = localData.dynamicSections.filter(section => section.id !== sectionId);
-        updateParent({ dynamicSections: updatedSections });
+        const updatedOrder = localData.allSectionsOrder.filter(id => id !== sectionId);
+        updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
     };
 
     // Function to handle deleting main sections
@@ -358,8 +359,13 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
         const fieldName = `${sectionKey}Details`;
         clearedData[fieldName] = [''];
 
+        // Remove from allSectionsOrder
+        const sectionId = `main_${sectionKey}`;
+        const updatedOrder = localData.allSectionsOrder.filter(id => id !== sectionId);
+
         updateParent({
             visibleSections: updatedVisibleSections,
+            allSectionsOrder: updatedOrder,
             ...clearedData
         });
     };
@@ -531,7 +537,18 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', flex: '1 0 0' }}>
                     <div
-                        style={{ display: 'flex', padding: '0 0 4px 16px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '8px' }}
+                        style={{
+                            display: 'flex',
+                            padding: '0 0 4px 16px',
+                            alignItems: 'center',
+                            alignSelf: 'stretch',
+                            borderRadius: '8px',
+                            background: hoveredSection === sectionHoverId ? '#F4F4F6' : 'transparent',
+                            transition: 'background 0.2s',
+                            cursor: !isPreview ? 'pointer' : 'default'
+                        }}
+                        onMouseEnter={() => setHoveredSection(sectionHoverId)}
+                        onMouseLeave={() => setHoveredSection(null)}
                     >
                         {isPreview ? (
                             <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
@@ -745,17 +762,23 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
         );
 };
 
-const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
-    if (!localData.visibleSections[sectionKey]) {
-        return null; // Don't show deleted sections
-    }
+    // --- Manage main section heading hover state in parent ---
+    const GREY_BG_SECTIONS = ['arrival', 'transfer', 'drop', 'hotel', 'activity', 'restaurant'];
+    const [mainSectionHover, setMainSectionHover] = useState({});
 
-    const sectionHoverId = `main_${sectionKey}`;
-    const sectionId = `main_${sectionKey}`;
+    const handleMainSectionMouseEnter = (sectionKey) => {
+        if (GREY_BG_SECTIONS.includes(sectionKey)) {
+            setMainSectionHover((prev) => ({ ...prev, [sectionKey]: true }));
+        }
+    };
+    const handleMainSectionMouseLeave = (sectionKey) => {
+        if (GREY_BG_SECTIONS.includes(sectionKey)) {
+            setMainSectionHover((prev) => ({ ...prev, [sectionKey]: false }));
+        }
+    };
 
-    // Copy handler for main sections
-    const handleCopyMainSection = () => {
-        // Map main sectionKey to dynamic section type/icon/heading
+    // Copy handler for main sections (moved out)
+    const handleCopyMainSection = (sectionKey) => {
         const sectionTypeMap = {
             arrival: { type: 'PlaneLanding', icon: 'PlaneLanding', heading: localData.sectionHeadings[sectionKey] || 'Arrival' },
             transfer: { type: 'CarFront', icon: 'CarFront', heading: localData.sectionHeadings[sectionKey] || 'Transfer' },
@@ -764,8 +787,6 @@ const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
         };
         const map = sectionTypeMap[sectionKey];
         if (!map) return;
-
-        // Get details array from localData
         let detailsArr = [];
         if (sectionKey === 'activity') {
             detailsArr = localData.activityDetails.map(d => ({ value: d }));
@@ -773,8 +794,6 @@ const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
             const fieldName = `${sectionKey}Details`;
             detailsArr = (localData[fieldName] || []).map(d => ({ value: d }));
         }
-
-        // Create new dynamic section object
         const uniqueId = `dynamic_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
         const newSection = {
             id: uniqueId,
@@ -783,8 +802,7 @@ const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
             heading: map.heading,
             details: detailsArr,
         };
-
-        // Insert after the main section in allSectionsOrder
+        const sectionId = `main_${sectionKey}`;
         const orderIdx = localData.allSectionsOrder.indexOf(sectionId);
         const updatedOrder = [
             ...localData.allSectionsOrder.slice(0, orderIdx + 1),
@@ -795,122 +813,124 @@ const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
         updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
     };
 
-    // Render the section normally
-    // Add hover state for heading background
-    const [isHeadingHovered, setIsHeadingHovered] = useState(false);
-    // Only apply hover effect for these section keys
-    const GREY_BG_SECTIONS = ['arrival', 'transfer', 'drop', 'hotel', 'activity', 'restaurant'];
-    const shouldGreyBg = GREY_BG_SECTIONS.includes(sectionKey);
-
-    return (
-        <SortableSection
-            key={sectionKey}
-            section={{ id: sectionId, hoverId: sectionHoverId }}
-            isPreview={isPreview}
-            hoveredSection={hoveredSection}
-            setHoveredSection={setHoveredSection}
-        >
-            <div style={{ display: 'inline-flex', padding: '8px', justifyContent: 'center', alignItems: 'center', gap: '8px', borderRadius: '28px', background: 'rgba(243, 63, 63, 0.06)', position: 'relative', cursor: isPreview ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none' }} onClick={!isPreview ? () => setOpenDropdownIndex(openDropdownIndex === dropdownIndex ? null : dropdownIndex) : undefined} onDragStart={e => e.preventDefault()}>
-                <div style={{ width: '20px', height: '20px', aspectratio: '1 / 1', userSelect: 'none' }}>
-                    <img src={ICON_OPTIONS[localData.icons[sectionKey]]} alt={sectionKey} draggable={false} onDragStart={e => e.preventDefault()} style={{ userSelect: 'none', pointerEvents: 'none' }} />
+    // --- Render main section as a JSX block, not a function with hooks ---
+    const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
+        if (!localData.visibleSections[sectionKey]) {
+            return null; // Don't show deleted sections
+        }
+        const sectionHoverId = `main_${sectionKey}`;
+        const sectionId = `main_${sectionKey}`;
+        const isHeadingHovered = !!mainSectionHover[sectionKey];
+        const shouldGreyBg = GREY_BG_SECTIONS.includes(sectionKey);
+        return (
+            <SortableSection
+                key={sectionKey}
+                section={{ id: sectionId, hoverId: sectionHoverId }}
+                isPreview={isPreview}
+                hoveredSection={hoveredSection}
+                setHoveredSection={setHoveredSection}
+            >
+                <div style={{ display: 'inline-flex', padding: '8px', justifyContent: 'center', alignItems: 'center', gap: '8px', borderRadius: '28px', background: 'rgba(243, 63, 63, 0.06)', position: 'relative', cursor: isPreview ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none' }} onClick={!isPreview ? () => setOpenDropdownIndex(openDropdownIndex === dropdownIndex ? null : dropdownIndex) : undefined} onDragStart={e => e.preventDefault()}>
+                    <div style={{ width: '20px', height: '20px', aspectratio: '1 / 1', userSelect: 'none' }}>
+                        <img src={ICON_OPTIONS[localData.icons[sectionKey]]} alt={sectionKey} draggable={false} onDragStart={e => e.preventDefault()} style={{ userSelect: 'none', pointerEvents: 'none' }} />
+                    </div>
+                    {renderDropdown(sectionKey, dropdownIndex)}
                 </div>
-                {renderDropdown(sectionKey, dropdownIndex)}
-            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', flex: '1 0 0' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        padding: '0 0 4px 16px',
-                        alignItems: 'center',
-                        alignSelf: 'stretch',
-                        borderRadius: '8px',
-                        background: shouldGreyBg && isHeadingHovered ? '#F4F4F6' : 'transparent',
-                        transition: 'background 0.2s',
-                    }}
-                    onMouseEnter={() => shouldGreyBg && setIsHeadingHovered(true)}
-                    onMouseLeave={() => shouldGreyBg && setIsHeadingHovered(false)}
-                >
-                    {isPreview ? (
-                        <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
-                            {localData.sectionHeadings[sectionKey]}
-                        </div>
-                    ) : (
-                        <input
-                            type="text"
-                            id={getUniqueId(`${sectionKey}_heading`)}
-                            name={getUniqueId(`${sectionKey}_heading`)}
-                            value={localData.sectionHeadings[sectionKey]}
-                            onChange={(e) => handleSectionHeadingChange(sectionKey, e.target.value)}
-                            style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
-                        />
-                    )}
-
-                    {!isPreview && hoveredSection === sectionHoverId && (
-                        <div style={{
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', flex: '1 0 0' }}>
+                    <div
+                        style={{
                             display: 'flex',
+                            padding: '0 0 4px 16px',
                             alignItems: 'center',
-                            gap: '10px',
-                        }}>
-                            <img
-                                src={copy}
-                                alt="copy"
-                                width={20}
-                                height={20}
-                                aspectratio="1 / 1"
-                                style={{ cursor: 'pointer' }}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    handleCopyMainSection();
-                                }}
+                            alignSelf: 'stretch',
+                            borderRadius: '8px',
+                            background: shouldGreyBg && isHeadingHovered ? '#F4F4F6' : 'transparent',
+                            transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={() => handleMainSectionMouseEnter(sectionKey)}
+                        onMouseLeave={() => handleMainSectionMouseLeave(sectionKey)}
+                    >
+                        {isPreview ? (
+                            <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
+                                {localData.sectionHeadings[sectionKey]}
+                            </div>
+                        ) : (
+                            <input
+                                type="text"
+                                id={getUniqueId(`${sectionKey}_heading`)}
+                                name={getUniqueId(`${sectionKey}_heading`)}
+                                value={localData.sectionHeadings[sectionKey]}
+                                onChange={(e) => handleSectionHeadingChange(sectionKey, e.target.value)}
+                                style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
                             />
-                            {/* Divider */}
+                        )}
+
+                        {!isPreview && hoveredSection === sectionHoverId && (
                             <div style={{
-                                width: '1px',
-                                height: '16px',
-                                backgroundColor: 'rgba(14, 19, 40, 0.2)',
-                                marginLeft: '8px',
-                                marginRight: '8px'
-                            }} />
-                            {/* Delete button */}
-                            <div
-                                onClick={() => handleDeleteMainSection(sectionKey)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    cursor: 'pointer',
-                                    gap: '4px'
-                                }}
-                                onDragStart={e => e.preventDefault()}
-                            >
-                                <span style={{
-                                    color: '#F33F3F',
-                                    fontFamily: 'Lato',
-                                    fontSize: '16px',
-                                    fontWeight: 600,
-                                    userSelect: 'none'
-                                }}>
-                                    Delete
-                                </span>
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                            }}>
                                 <img
-                                    src={deleteIcon}
-                                    alt="remove"
+                                    src={copy}
+                                    alt="copy"
                                     width={20}
                                     height={20}
-                                    draggable={false}
-                                    onDragStart={e => e.preventDefault()}
-                                    style={{ userSelect: 'none', pointerEvents: 'none' }}
+                                    aspectratio="1 / 1"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleCopyMainSection(sectionKey);
+                                    }}
                                 />
+                                {/* Divider */}
+                                <div style={{
+                                    width: '1px',
+                                    height: '16px',
+                                    backgroundColor: 'rgba(14, 19, 40, 0.2)',
+                                    marginLeft: '8px',
+                                    marginRight: '8px'
+                                }} />
+                                {/* Delete button */}
+                                <div
+                                    onClick={() => handleDeleteMainSection(sectionKey)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        cursor: 'pointer',
+                                        gap: '4px'
+                                    }}
+                                    onDragStart={e => e.preventDefault()}
+                                >
+                                    <span style={{
+                                        color: '#F33F3F',
+                                        fontFamily: 'Lato',
+                                        fontSize: '16px',
+                                        fontWeight: 600,
+                                        userSelect: 'none'
+                                    }}>
+                                        Delete
+                                    </span>
+                                    <img
+                                        src={deleteIcon}
+                                        alt="remove"
+                                        width={20}
+                                        height={20}
+                                        draggable={false}
+                                        onDragStart={e => e.preventDefault()}
+                                        style={{ userSelect: 'none', pointerEvents: 'none' }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
 
-                {sectionData}
-            </div>
-        </SortableSection>
-    );
-};
+                    {sectionData}
+                </div>
+            </SortableSection>
+        );
+    };
 
 // Get all sortable items (unified)
 const getAllSortableItems = () => localData.allSectionsOrder;
