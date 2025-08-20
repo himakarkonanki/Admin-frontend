@@ -153,7 +153,7 @@ function AddSectionTray({ onAddSection }) {
                             justifyContent: 'center',
                             alignItems: 'center',
                             borderRadius: '50%',
-                            background: hoveredIcon === 'close' ? '#0E1328' : '#F2F4FE',
+                            background: hoveredIcon === 'close' ? '#0E1328' : 'transparent',
                             cursor: 'pointer',
                             transition: 'background-color 0.2s ease',
                         }}

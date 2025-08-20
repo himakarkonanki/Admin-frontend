@@ -16,7 +16,7 @@ function ImageUpload({ onImageUpload, existingImage, heightReduction = 0, onRemo
     };
 
     // Fixed dimensions, match details section width (820px)
-    const containerWidth = 820;
+    const containerWidth = 890;
     const containerHeight = 300;
 
     const handleFiles = (files) => {

@@ -125,7 +125,7 @@ export class PDFGenerator {
     // Generate HTML content for PDF
     static async generateHTMLContent(pages, pagesContainerRef, onProgress) {
         try {
-            if (onProgress) onProgress('🔄 Generating HTML content...');
+            if (onProgress) onProgress('Generating HTML content...');
             
             // Wait for all fonts and assets to load
             await document.fonts.ready;
@@ -238,6 +238,30 @@ export class PDFGenerator {
             background: white;
             margin: 0;
             padding: 0;
+        }
+
+        /* ===== PDF IMAGE SECTION STYLES ===== */
+        .pdf-image-section {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 24px !important;
+            width: 100% !important;
+        }
+        .pdf-image-container {
+            padding: 0px 0px 0px 16px !important;
+            margin-left: -16px !important;
+            margin-right: 16px !important;
+            align-self: stretch !important;
+            width: auto !important;
+            position: relative !important;
+        }
+        .pdf-image {
+            width: 920px !important;
+            height: 300px !important;
+            object-fit: cover !important;
+            border-radius: 16px !important;
+            display: block !important;
         }
         
         /* ===== PAGE LAYOUT STYLES ===== */

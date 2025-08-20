@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Thankyou from '../assets/icons/Thankthumbnail.svg';
 import Footer from './Footer';
 import instagram from '../assets/icons/Instagram.svg';
-import facebook from '../assets/icons/Facebook.svg';
+import facebook from '../assets/icons/meta.svg';
+import linkedin from '../assets/icons/linkedin.svg';
+import whatsapp from '../assets/icons/whatsapp.png';
 
 const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = false, totalPages }) => {
     const [base64Image, setBase64Image] = useState('');
@@ -143,12 +145,24 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                                 ) : null
                             ) : (
                                 // Edit mode - input field
-                                <input
-                                    type="text"
+                                <textarea
                                     id={titleId}
                                     value={localData.thankYouTitle}
-                                    onChange={(e) => handleDataChange('thankYouTitle', e.target.value)}
+                                    onChange={e => {
+                                        handleDataChange('thankYouTitle', e.target.value);
+                                        if (e.target) {
+                                            e.target.style.height = 'auto';
+                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                        }
+                                    }}
+                                    onInput={e => {
+                                        if (e.target) {
+                                            e.target.style.height = 'auto';
+                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                        }
+                                    }}
                                     placeholder="Thank You!"
+                                    rows={1}
                                     style={{
                                         flex: '1 0 0',
                                         color: localData.thankYouTitle ? '#F33F3F' : 'rgba(243, 63, 63, 0.24)',
@@ -161,6 +175,11 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                                         border: 'none',
                                         outline: 'none',
                                         background: 'transparent',
+                                        resize: 'none',
+                                        overflow: 'hidden',
+                                        height: 'auto',
+                                        boxShadow: 'none',
+                                        padding: 0
                                     }}
                                 />
                             )}
@@ -357,8 +376,10 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                         gap: '18px',
                     }}>
                         
-                        <img src={facebook} style={{width: '14px', height: '24px', aspectRatio: '7/12'}} alt="Facebook" />
+                        <img src={facebook} style={{width: '24px', height: '24px', aspectRatio: '7/12'}} alt="Facebook" />
                         <img src={instagram} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="Instagram" />
+                        <img src={linkedin} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="LinkedIn" />
+                        <img src={whatsapp} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="WhatsApp" />
                     </div>
                 </div>
                 <div style={{

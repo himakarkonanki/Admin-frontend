@@ -442,49 +442,23 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     hoveredSection={hoveredSection}
                     setHoveredSection={setHoveredSection}
                 >
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', flex: '1 0 0', width: '100%' }}>
-                        <div style={{ padding: '0px 0px 0px 16px', marginLeft: '16px', marginRight: '16px', alignSelf: 'stretch', width: 'auto', position: 'relative' }}>
+                    <div className="pdf-image-section">
+                        <div className="pdf-image-container">
                             {isPreview ? (
                                 section.image ? (
-                                    <div style={{ position: 'relative', width: '820px', height: '300px' }}>
+                                    <div style={{ position: 'relative', width: '920px', height: '300px' }}>
                                         <img
                                             src={section.image}
                                             alt="Uploaded preview"
+                                            className="pdf-image"
                                             style={{
-                                                width: '820px',
+                                                width: '920px',
                                                 height: '300px',
                                                 objectFit: 'cover',
-                                                borderRadius: '24px',
+                                                borderRadius: '16px',
                                                 display: 'block',
                                             }}
                                         />
-                                        {/* Remove image only in preview mode */}
-                                        <button
-                                            onClick={() => {
-                                                const updatedSections = localData.dynamicSections.map(s =>
-                                                    s.id === section.id ? { ...s, image: null } : s
-                                                );
-                                                updateParent({ dynamicSections: updatedSections });
-                                            }}
-                                            style={{
-                                                position: 'absolute',
-                                                top: '12px',
-                                                right: '12px',
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '50%',
-                                                background: 'rgba(14, 19, 40, 0.72)',
-                                                border: 'none',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                cursor: 'pointer',
-                                                zIndex: 2,
-                                            }}
-                                            aria-label="Remove image"
-                                        >
-                                            <img src={closeIcon} alt="Remove" style={{ width: 24, height: 24, filter: 'invert(1)' }} />
-                                        </button>
                                     </div>
                                 ) : null
                             ) : (
@@ -963,32 +937,58 @@ return (
         <div style={{ display: 'flex', width: '100%', padding: '64px', flexDirection: 'column', alignItems: 'center', gap: '32px', flex: 1, paddingBottom: '0px' }}>
             {/* Title Section */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'stretch' }}>
-                <div style={{ display: 'flex', padding: '8px 16px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }}>
+                {/* Day Number */}
+                <div style={
+                    isPreview
+                        ? { display: 'flex', padding: '8px 16px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
+                        : { display: 'flex', padding: '8px 0px 8px 36px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                }>
                     <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '24px', fontStyle: 'normal', fontWeight: 500, lineHeight: '36px' }}>
                         DAY {dayNumber || 1}
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', width: '960px', padding: '8px 16px', alignItems: 'center', borderRadius: '16px' }}>
+                {/* Destination */}
+                <div style={
+                    isPreview
+                        ? { display: 'flex', width: '960px', padding: '8px 16px', alignItems: 'center', borderRadius: '16px' }
+                        : { display: 'flex', width: '960px', padding: '8px 0px 8px 36px', alignItems: 'center', borderRadius: '16px', marginLeft: '16px' }
+                }>
                     {isPreview ? (
                         <div style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0 }}>
                             {localData.destination || 'Enter Destination'}
                         </div>
                     ) : (
-                        <input
-                            type="text"
+                        <textarea
                             value={localData.destination}
                             id={getUniqueId('destination')}
                             name={getUniqueId('destination')}
-                            onChange={(e) => updateParent({ destination: e.target.value })}
+                            onChange={e => {
+                                updateParent({ destination: e.target.value });
+                                if (e.target) {
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height = e.target.scrollHeight + 'px';
+                                }
+                            }}
+                            onInput={e => {
+                                if (e.target) {
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height = e.target.scrollHeight + 'px';
+                                }
+                            }}
                             placeholder="Enter Destination"
-                            style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0, border: 'none', outline: 'none', background: 'transparent' }}
+                            rows={1}
+                            style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0, border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', padding: 0 }}
                         />
                     )}
                 </div>
 
                 {/* Meal Options */}
-                <div style={{ display: 'flex', padding: '8px 16px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }}>
+                <div style={
+                    isPreview
+                        ? { display: 'flex', padding: '8px 16px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }
+                        : { display: 'flex', padding: '8px 0px 12px 32px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                }>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                         {['breakfast', 'lunch', 'dinner']
                             .filter(meal => {

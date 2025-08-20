@@ -418,7 +418,7 @@ const handleRedo = useCallback(async () => {
   const getPageTitle = (page) => {
     switch (page.type) {
       case 'cover':
-        return 'FRONT PAGE'; // This ensures the cover page gets the correct title
+        return 'COVER PAGE'; // This ensures the cover page gets the correct title
       case 'day':
         return 'DAY PAGE';
       case 'policy':
