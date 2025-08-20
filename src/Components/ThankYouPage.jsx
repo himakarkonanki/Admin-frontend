@@ -232,15 +232,15 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                                         color: localData.thankYouMessage ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.24)',
                                         fontFamily: 'Lato',
                                         fontSize: '20px',
-                                        fontStyle: 'italic',
+                                        fontStyle: 'normal',
                                         fontWeight: 400,
                                         lineHeight: '36px',
                                         flex: '1 0 0',
                                         border: 'none',
                                         outline: 'none',
                                         background: 'transparent',
-                                        resize: 'vertical',
-                                        minHeight: '150px',
+                                        resize: 'none',
+                                        height: 'auto',
                                     }}
                                 />
                             )}

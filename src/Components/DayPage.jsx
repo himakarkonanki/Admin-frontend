@@ -589,59 +589,110 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                     }}
                                 />
 
-                        {/* Divider */}
-                        <div style={{
-                            width: '1px',
-                            height: '16px',
-                            backgroundColor: 'rgba(14, 19, 40, 0.2)',
-                            marginLeft: '8px',
-                            marginRight: '8px'
-                        }} />
-                        {/* Delete button */}
-                        <div
-                            onClick={() => removeSection(section.id)}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                cursor: 'pointer',
-                                gap: '4px'
-                            }}
-                            onDragStart={e => e.preventDefault()}
-                        >
-                            <span style={{
-                                color: '#F33F3F',
-                                fontFamily: 'Lato',
-                                fontSize: '16px',
-                                fontWeight: 600,
-                                userSelect: 'none'
-                            }}>
-                                Delete
-                            </span>
-                            <img
-                                src={deleteIcon}
-                                alt="remove"
-                                width={20}
-                                height={20}
-                                draggable={false}
-                                onDragStart={e => e.preventDefault()}
-                                style={{ userSelect: 'none', pointerEvents: 'none' }}
-                            />
-                        </div>
-                    </div>
+                                {/* Divider */}
+                                <div style={{
+                                    width: '1px',
+                                    height: '16px',
+                                    backgroundColor: 'rgba(14, 19, 40, 0.2)',
+                                    marginLeft: '8px',
+                                    marginRight: '8px'
+                                }} />
+                                {/* Delete button */}
+                                <div
+                                    onClick={() => removeSection(section.id)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        cursor: 'pointer',
+                                        gap: '4px'
+                                    }}
+                                    onDragStart={e => e.preventDefault()}
+                                >
+                                    <span style={{
+                                        color: '#F33F3F',
+                                        fontFamily: 'Lato',
+                                        fontSize: '16px',
+                                        fontWeight: 600,
+                                        userSelect: 'none'
+                                    }}>
+                                        Delete
+                                    </span>
+                                    <img
+                                        src={deleteIcon}
+                                        alt="remove"
+                                        width={20}
+                                        height={20}
+                                        draggable={false}
+                                        onDragStart={e => e.preventDefault()}
+                                        style={{ userSelect: 'none', pointerEvents: 'none' }}
+                                    />
+                                </div>
+                            </div>
                         )}
-                </div>
+                    </div>
 
-                <div style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'flex-start', flexDirection: 'column', alignSelf: 'stretch' }}>
-                    {Array.isArray(section.details) ? (
-                        section.details.map((detail, detailIndex) => (
-                            <div
-                                key={detailIndex}
-                                style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', marginBottom: detailIndex < section.details.length - 1 ? '0px' : '0px', borderRadius: '8px' }}
-                            >
+                    <div style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'flex-start', flexDirection: 'column', alignSelf: 'stretch' }}>
+                        {Array.isArray(section.details) ? (
+                            section.details.map((detail, detailIndex) => (
+                                <div
+                                    key={detailIndex}
+                                    style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', marginBottom: detailIndex < section.details.length - 1 ? '0px' : '0px', borderRadius: '8px' }}
+                                >
+                                    {isPreview ? (
+                                        <span
+                                            style={{
+                                                color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
+                                                fontFamily: 'Lato',
+                                                fontSize: '20px',
+                                                fontStyle: 'normal',
+                                                fontWeight: 400,
+                                                width: '820px',
+                                                minHeight: '32px',
+                                                lineHeight: '32px',
+                                                background: 'transparent',
+                                                textAlign: 'justify',
+                                                display: 'inline-block',
+                                                whiteSpace: 'pre-line',
+                                                boxSizing: 'border-box',
+                                                padding: 0,
+                                            }}
+                                        >
+                                            {detail.value}
+                                        </span>
+                                    ) : (
+                                        <textarea
+                                            ref={el => {
+                                                if (el) {
+                                                    el.style.height = 'auto';
+                                                    el.style.height = el.scrollHeight + 'px';
+                                                }
+                                            }}
+                                            value={detail.value || ''}
+                                            id={getUniqueId('dynamic_section_details', `${section.id}_${detailIndex}`)}
+                                            name={getUniqueId('dynamic_section_details', `${section.id}_${detailIndex}`)}
+                                            rows={1}
+                                            onChange={e => {
+                                                handleDynamicSectionChange(section.id, 'details', { ...detail, value: e.target.value }, detailIndex);
+                                                e.target.style.height = 'auto';
+                                                e.target.style.height = e.target.scrollHeight + 'px';
+                                            }}
+                                            onInput={e => {
+                                                e.target.style.height = 'auto';
+                                                e.target.style.height = e.target.scrollHeight + 'px';
+                                            }}
+                                            placeholder={`Enter ${section.heading.toLowerCase()} details`}
+                                            style={{ color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify' }}
+                                        />
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            // Fallback for old format - single detail field
+                            <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', gap: '8px' }}>
                                 {isPreview ? (
                                     <span
                                         style={{
-                                            color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
+                                            color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
                                             fontFamily: 'Lato',
                                             fontSize: '20px',
                                             fontStyle: 'normal',
@@ -657,22 +708,15 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                             padding: 0,
                                         }}
                                     >
-                                        {detail.value}
+                                        {section.details.value}
                                     </span>
                                 ) : (
                                     <textarea
-                                        ref={el => {
-                                            if (el) {
-                                                el.style.height = 'auto';
-                                                el.style.height = el.scrollHeight + 'px';
-                                            }
-                                        }}
-                                        value={detail.value || ''}
-                                        id={getUniqueId('dynamic_section_details', `${section.id}_${detailIndex}`)}
-                                        name={getUniqueId('dynamic_section_details', `${section.id}_${detailIndex}`)}
-                                        rows={1}
+                                        value={section.details.value || ''}
+                                        id={getUniqueId('dynamic_section_details', section.id)}
+                                        name={getUniqueId('dynamic_section_details', section.id)}
                                         onChange={e => {
-                                            handleDynamicSectionChange(section.id, 'details', { ...detail, value: e.target.value }, detailIndex);
+                                            handleDynamicSectionChange(section.id, 'details', { ...section.details, value: e.target.value });
                                             e.target.style.height = 'auto';
                                             e.target.style.height = e.target.scrollHeight + 'px';
                                         }}
@@ -681,60 +725,16 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                             e.target.style.height = e.target.scrollHeight + 'px';
                                         }}
                                         placeholder={`Enter ${section.heading.toLowerCase()} details`}
-                                        style={{ color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify' }}
+                                        style={{ color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', padding: 0, textAlign: 'justify' }}
                                     />
                                 )}
                             </div>
-                        ))
-                    ) : (
-                        // Fallback for old format - single detail field
-                        <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', gap: '8px' }}>
-                            {isPreview ? (
-                                <span
-                                    style={{
-                                        color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
-                                        fontFamily: 'Lato',
-                                        fontSize: '20px',
-                                        fontStyle: 'normal',
-                                        fontWeight: 400,
-                                        width: '820px',
-                                        minHeight: '32px',
-                                        lineHeight: '32px',
-                                        background: 'transparent',
-                                        textAlign: 'justify',
-                                        display: 'inline-block',
-                                        whiteSpace: 'pre-line',
-                                        boxSizing: 'border-box',
-                                        padding: 0,
-                                    }}
-                                >
-                                    {section.details.value}
-                                </span>
-                            ) : (
-                                <textarea
-                                    value={section.details.value || ''}
-                                    id={getUniqueId('dynamic_section_details', section.id)}
-                                    name={getUniqueId('dynamic_section_details', section.id)}
-                                    onChange={e => {
-                                        handleDynamicSectionChange(section.id, 'details', { ...section.details, value: e.target.value });
-                                        e.target.style.height = 'auto';
-                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                    }}
-                                    onInput={e => {
-                                        e.target.style.height = 'auto';
-                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                    }}
-                                    placeholder={`Enter ${section.heading.toLowerCase()} details`}
-                                    style={{ color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', padding: 0, textAlign: 'justify' }}
-                                />
-                            )}
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
             </SortableSection >
         );
-};
+    };
 
     // --- Manage main section heading hover state in parent ---
     const GREY_BG_SECTIONS = ['arrival', 'transfer', 'drop', 'hotel', 'activity', 'restaurant'];
@@ -906,312 +906,368 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
         );
     };
 
-// Get all sortable items (unified)
-const getAllSortableItems = () => localData.allSectionsOrder;
+    // Get all sortable items (unified)
+    const getAllSortableItems = () => localData.allSectionsOrder;
 
-return (
-    <div style={{ display: 'flex', width: '1088px', height: '1540px', flexDirection: 'column', backgroundColor: '#fff', position: 'relative', overflow: 'hidden' }}>
-        {/* Hidden file input for both initial upload and changing image */}
-        {!isPreview && (
-            <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={e => {
-                    const file = e.target.files && e.target.files[0];
-                    if (!file) return;
-                    if (file.size > 2 * 1024 * 1024) {
-                        alert("File size exceeds 2MB limit.");
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        handleImageUpload(file, reader.result);
-                    };
-                    reader.readAsDataURL(file);
-                }}
-            />
-        )}
-        {/* Main Content Area */}
-        <div style={{ display: 'flex', width: '100%', padding: '64px', flexDirection: 'column', alignItems: 'center', gap: '32px', flex: 1, paddingBottom: '0px' }}>
-            {/* Title Section */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'stretch' }}>
-                {/* Day Number */}
-                <div style={
-                    isPreview
-                        ? { display: 'flex', padding: '8px 16px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
-                        : { display: 'flex', padding: '8px 0px 8px 36px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
-                }>
-                    <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '24px', fontStyle: 'normal', fontWeight: 500, lineHeight: '36px' }}>
-                        DAY {dayNumber || 1}
-                    </div>
-                </div>
-
-                {/* Destination */}
-                <div style={
-                    isPreview
-                        ? { display: 'flex', width: '960px', padding: '8px 16px', alignItems: 'center', borderRadius: '16px' }
-                        : { display: 'flex', width: '960px', padding: '8px 0px 8px 36px', alignItems: 'center', borderRadius: '16px', marginLeft: '16px' }
-                }>
-                    {isPreview ? (
-                        <div style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0 }}>
-                            {localData.destination || 'Enter Destination'}
+    return (
+        <div style={{ display: 'flex', width: '1088px', height: '1540px', flexDirection: 'column', backgroundColor: '#fff', position: 'relative', overflow: 'hidden' }}>
+            {/* Hidden file input for both initial upload and changing image */}
+            {!isPreview && (
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={e => {
+                        const file = e.target.files && e.target.files[0];
+                        if (!file) return;
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert("File size exceeds 2MB limit.");
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            handleImageUpload(file, reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }}
+                />
+            )}
+            {/* Main Content Area */}
+            <div style={{ display: 'flex', width: '100%', padding: '64px', flexDirection: 'column', alignItems: 'center', gap: '32px', flex: 1, paddingBottom: '0px' }}>
+                {/* Title Section */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'stretch' }}>
+                    {/* Day Number */}
+                    <div style={
+                        isPreview
+                            ? { display: 'flex', padding: '8px 16px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
+                            : { display: 'flex', padding: '8px 0px 8px 36px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                    }>
+                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '24px', fontStyle: 'normal', fontWeight: 500, lineHeight: '36px' }}>
+                            DAY {dayNumber || 1}
                         </div>
-                    ) : (
-                        <textarea
-                            value={localData.destination}
-                            id={getUniqueId('destination')}
-                            name={getUniqueId('destination')}
-                            onChange={e => {
-                                updateParent({ destination: e.target.value });
-                                if (e.target) {
-                                    e.target.style.height = 'auto';
-                                    e.target.style.height = e.target.scrollHeight + 'px';
-                                }
-                            }}
-                            onInput={e => {
-                                if (e.target) {
-                                    e.target.style.height = 'auto';
-                                    e.target.style.height = e.target.scrollHeight + 'px';
-                                }
-                            }}
-                            placeholder="Enter Destination"
-                            rows={1}
-                            style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0, border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', padding: 0 }}
-                        />
-                    )}
-                </div>
+                    </div>
 
-                {/* Meal Options */}
-                <div style={
-                    isPreview
-                        ? { display: 'flex', padding: '8px 16px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }
-                        : { display: 'flex', padding: '8px 0px 12px 32px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
-                }>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                        {['breakfast', 'lunch', 'dinner']
-                            .filter(meal => {
-                                return isPreview ? localData.mealSelections[meal] : true;
-                            })
-                            .map((meal) => {
-                                const selected = localData.mealSelections[meal];
-                                return (
-                                    <div
-                                        key={meal}
-                                        onClick={!isPreview ? () => handleMealToggle(meal) : undefined}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            padding: '8px 16px',
-                                            borderRadius: '999px',
-                                            gap: '8px',
-                                            backgroundColor: '#F4F4F6', // Always light grey
-                                            border: '1px solid transparent',
-                                            cursor: isPreview ? 'default' : 'pointer',
-                                            boxShadow: (selected && !isPreview) ? '0 0 0 1px rgba(0,0,0,0.04)' : 'none',
-                                            userSelect: 'none',
-                                            WebkitUserSelect: 'none',
-                                            MozUserSelect: 'none',
-                                            msUserSelect: 'none'
-                                        }}
-                                        onDragStart={e => e.preventDefault()}
-                                    >
-                                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: selected ? 'none' : '2px solid #A3A3A3', backgroundColor: selected ? '#0E1328' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
-                                            {selected && (
-                                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                                    <path d="M3 6.2L5 8.2L9 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                            )}
+                    {/* Destination */}
+                    <div style={
+                        isPreview
+                            ? { display: 'flex', width: '960px', padding: '8px 16px', alignItems: 'center', borderRadius: '16px' }
+                            : { display: 'flex', width: '960px', padding: '8px 0px 8px 36px', alignItems: 'center', borderRadius: '16px', marginLeft: '16px' }
+                    }>
+                        {isPreview ? (
+                            <div style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0 }}>
+                                {localData.destination || 'Enter Destination'}
+                            </div>
+                        ) : (
+                            <textarea
+                                value={localData.destination}
+                                id={getUniqueId('destination')}
+                                name={getUniqueId('destination')}
+                                onChange={e => {
+                                    updateParent({ destination: e.target.value });
+                                    if (e.target) {
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = e.target.scrollHeight + 'px';
+                                    }
+                                }}
+                                onInput={e => {
+                                    if (e.target) {
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = e.target.scrollHeight + 'px';
+                                    }
+                                }}
+                                placeholder="Enter Destination"
+                                rows={1}
+                                style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0, border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', padding: 0 }}
+                            />
+                        )}
+                    </div>
+
+                    {/* Meal Options */}
+                    <div style={
+                        isPreview
+                            ? { display: 'flex', padding: '8px 16px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }
+                            : { display: 'flex', padding: '8px 0px 12px 32px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                    }>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                            {['breakfast', 'lunch', 'dinner']
+                                .filter(meal => {
+                                    return isPreview ? localData.mealSelections[meal] : true;
+                                })
+                                .map((meal) => {
+                                    const selected = localData.mealSelections[meal];
+                                    return (
+                                        <div
+                                            key={meal}
+                                            onClick={!isPreview ? () => handleMealToggle(meal) : undefined}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                padding: '8px 16px',
+                                                borderRadius: '999px',
+                                                gap: '8px',
+                                                backgroundColor: '#F4F4F6', // Always light grey
+                                                border: '1px solid transparent',
+                                                cursor: isPreview ? 'default' : 'pointer',
+                                                boxShadow: (selected && !isPreview) ? '0 0 0 1px rgba(0,0,0,0.04)' : 'none',
+                                                userSelect: 'none',
+                                                WebkitUserSelect: 'none',
+                                                MozUserSelect: 'none',
+                                                msUserSelect: 'none'
+                                            }}
+                                            onDragStart={e => e.preventDefault()}
+                                        >
+                                            <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: selected ? 'none' : '2px solid #A3A3A3', backgroundColor: selected ? '#0E1328' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
+                                                {selected && (
+                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                        <path d="M3 6.2L5 8.2L9 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <span style={{ fontFamily: 'Lato', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: selected ? '#0E1328' : '#A3A3A3', userSelect: 'none' }}>
+                                                {meal}
+                                            </span>
                                         </div>
-                                        <span style={{ fontFamily: 'Lato', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: selected ? '#0E1328' : '#A3A3A3', userSelect: 'none' }}>
-                                            {meal}
-                                        </span>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Main Content Frame - Reduced gap for better spacing */}
-            <div style={{ display: 'flex', padding: '0 16px', flexDirection: 'column', alignItems: 'flex-start', gap: '16px', alignSelf: 'stretch', marginBottom: '0px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', alignSelf: 'stretch' }}>
+                {/* Main Content Frame - Reduced gap for better spacing */}
+                <div style={{ display: 'flex', padding: '0 16px', flexDirection: 'column', alignItems: 'flex-start', gap: '16px', alignSelf: 'stretch', marginBottom: '0px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', alignSelf: 'stretch' }}>
 
-                    {/* Drag and Drop Context */}
-                    <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                    >
-                        <SortableContext
-                            items={getAllSortableItems()}
-                            strategy={verticalListSortingStrategy}
+                        {/* Drag and Drop Context */}
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
                         >
-                            {/* Render all sections in unified order */}
-                            {localData.allSectionsOrder.map((sectionId, idx) => {
-                                if (sectionId.startsWith('main_')) {
-                                    const sectionKey = sectionId.replace('main_', '');
-                                    if (!localData.visibleSections[sectionKey]) return null;
-                                    let dropdownIndex = idx;
-                                    switch (sectionKey) {
-                                        case 'arrival':
-                                            return renderMainSection('arrival', dropdownIndex, (
-                                                <div>
-                                                    {localData.arrivalDetails.map((detail, detailIndex) => (
-                                                        <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
-                                                            {isPreview ? (
-                                                                detail ? (
-                                                                    <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', textAlign: 'justify' }}>
-                                                                        <span style={{ textAlign: 'justify', display: 'block' }}>{detail}</span>
-                                                                    </div>
-                                                                ) : null
-                                                            ) : (
-                                                                <textarea
-                                                                    id={getUniqueId('arrival_details', detailIndex)}
-                                                                    name={getUniqueId('arrival_details', detailIndex)}
-                                                                    value={detail}
-                                                                    onChange={e => {
-                                                                        handleSubFieldChange('arrival', detailIndex, e.target.value);
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    onInput={e => {
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    placeholder="Enter the arrival details"
-                                                                    style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ));
-                                        case 'transfer':
-                                            return renderMainSection('transfer', dropdownIndex, (
-                                                <div>
-                                                    {localData.transferDetails.map((detail, detailIndex) => (
-                                                        <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
-                                                            {isPreview ? (
-                                                                detail ? (
-                                                                    <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0' }}>
-                                                                        <span style={{ textAlign: 'justify', display: 'block' }}>{detail}</span>
-                                                                    </div>
-                                                                ) : null
-                                                            ) : (
-                                                                <textarea
-                                                                    id={getUniqueId('transfer_details', detailIndex)}
-                                                                    name={getUniqueId('transfer_details', detailIndex)}
-                                                                    value={detail}
-                                                                    onChange={e => {
-                                                                        handleSubFieldChange('transfer', detailIndex, e.target.value);
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    onInput={e => {
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    placeholder="Enter the transfer details"
-                                                                    style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ));
-                                        case 'activity':
-                                            return renderMainSection('activity', dropdownIndex, (
-                                                <div>
-                                                    {localData.activityDetails.map((detail, detailIndex) => (
-                                                        isPreview ? (
-                                                            detail ? (
-                                                                <div key={detailIndex} style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', padding: '0px 0px 0px 16px', marginBottom: '8px', whiteSpace: 'pre-line' }}>
-                                                                    {detail}
-                                                                </div>
-                                                            ) : null
-                                                        ) : (
+                            <SortableContext
+                                items={getAllSortableItems()}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {/* Render all sections in unified order */}
+                                {localData.allSectionsOrder.map((sectionId, idx) => {
+                                    if (sectionId.startsWith('main_')) {
+                                        const sectionKey = sectionId.replace('main_', '');
+                                        if (!localData.visibleSections[sectionKey]) return null;
+                                        let dropdownIndex = idx;
+                                        switch (sectionKey) {
+                                            case 'arrival':
+                                                return renderMainSection('arrival', dropdownIndex, (
+                                                    <div>
+                                                        {localData.arrivalDetails.map((detail, detailIndex) => (
                                                             <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
-                                                                <textarea
-                                                                    id={getUniqueId('activity_details', detailIndex)}
-                                                                    name={getUniqueId('activity_details', detailIndex)}
-                                                                    value={detail}
-                                                                    onChange={e => {
-                                                                        handleSubFieldChange('activity', detailIndex, e.target.value);
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    onInput={e => {
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    placeholder="Enter the activity details"
-                                                                    style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
-                                                                />
+                                                                {isPreview ? (
+                                                                    detail ? (
+                                                                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', textAlign: 'justify' }}>
+                                                                            <span style={{
+                                                                                fontFamily: 'Lato',
+                                                                                fontSize: '20px',
+                                                                                fontStyle: 'normal',
+                                                                                fontWeight: 400,
+                                                                                width: '820px',
+                                                                                minHeight: '32px',
+                                                                                lineHeight: '32px',
+                                                                                background: 'transparent',
+                                                                                textAlign: 'justify',
+                                                                                display: 'inline-block',
+                                                                                whiteSpace: 'pre-line',
+                                                                                boxSizing: 'border-box',
+                                                                                padding: 0,
+                                                                            }}>{detail}</span>
+                                                                        </div>
+                                                                    ) : null
+                                                                ) : (
+                                                                    <textarea
+                                                                        id={getUniqueId('arrival_details', detailIndex)}
+                                                                        name={getUniqueId('arrival_details', detailIndex)}
+                                                                        value={detail}
+                                                                        onChange={e => {
+                                                                            handleSubFieldChange('arrival', detailIndex, e.target.value);
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        onInput={e => {
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        placeholder="Enter the arrival details"
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                    />
+                                                                )}
                                                             </div>
-                                                        )
-                                                    ))}
-                                                </div>
-                                            ));
-                                        case 'drop':
-                                            return renderMainSection('drop', dropdownIndex, (
-                                                <div>
-                                                    {localData.dropDetails.map((detail, detailIndex) => (
-                                                        <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
-                                                            {isPreview ? (
+                                                        ))}
+                                                    </div>
+                                                ));
+                                            case 'transfer':
+                                                return renderMainSection('transfer', dropdownIndex, (
+                                                    <div>
+                                                        {localData.transferDetails.map((detail, detailIndex) => (
+                                                            <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
+                                                                {isPreview ? (
+                                                                    detail ? (
+                                                                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0' }}>
+                                                                            <span style={{
+                                                                                fontFamily: 'Lato',
+                                                                                fontSize: '20px',
+                                                                                fontStyle: 'normal',
+                                                                                fontWeight: 400,
+                                                                                width: '820px',
+                                                                                minHeight: '32px',
+                                                                                lineHeight: '32px',
+                                                                                background: 'transparent',
+                                                                                textAlign: 'justify',
+                                                                                display: 'inline-block',
+                                                                                whiteSpace: 'pre-line',
+                                                                                boxSizing: 'border-box',
+                                                                                padding: 0,
+                                                                            }}>{detail}</span>
+                                                                        </div>
+                                                                    ) : null
+                                                                ) : (
+                                                                    <textarea
+                                                                        id={getUniqueId('transfer_details', detailIndex)}
+                                                                        name={getUniqueId('transfer_details', detailIndex)}
+                                                                        value={detail}
+                                                                        onChange={e => {
+                                                                            handleSubFieldChange('transfer', detailIndex, e.target.value);
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        onInput={e => {
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        placeholder="Enter the transfer details"
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ));
+                                            case 'activity':
+                                                return renderMainSection('activity', dropdownIndex, (
+                                                    <div>
+                                                        {localData.activityDetails.map((detail, detailIndex) => (
+                                                            isPreview ? (
                                                                 detail ? (
-                                                                    <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0' }}>
-                                                                        <span style={{ textAlign: 'justify', display: 'block' }}>{detail}</span>
+                                                                    <div key={detailIndex} style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', padding: '0px 0px 0px 16px', marginBottom: '8px', whiteSpace: 'pre-line' }}>
+                                                                        <span style={{
+                                                                            fontFamily: 'Lato',
+                                                                            fontSize: '20px',
+                                                                            fontStyle: 'normal',
+                                                                            fontWeight: 400,
+                                                                            width: '820px',
+                                                                            minHeight: '32px',
+                                                                            lineHeight: '32px',
+                                                                            background: 'transparent',
+                                                                            textAlign: 'justify',
+                                                                            display: 'inline-block',
+                                                                            whiteSpace: 'pre-line',
+                                                                            boxSizing: 'border-box',
+                                                                            padding: 0,
+                                                                        }}>{detail}</span>
                                                                     </div>
                                                                 ) : null
                                                             ) : (
-                                                                <textarea
-                                                                    id={getUniqueId('drop_details', detailIndex)}
-                                                                    name={getUniqueId('drop_details', detailIndex)}
-                                                                    value={detail}
-                                                                    onChange={e => {
-                                                                        handleSubFieldChange('drop', detailIndex, e.target.value);
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    onInput={e => {
-                                                                        e.target.style.height = 'auto';
-                                                                        e.target.style.height = e.target.scrollHeight + 'px';
-                                                                    }}
-                                                                    placeholder="Enter the drop details"
-                                                                    style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ));
-                                        default:
-                                            return null;
+                                                                <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
+                                                                    <textarea
+                                                                        id={getUniqueId('activity_details', detailIndex)}
+                                                                        name={getUniqueId('activity_details', detailIndex)}
+                                                                        value={detail}
+                                                                        onChange={e => {
+                                                                            handleSubFieldChange('activity', detailIndex, e.target.value);
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        onInput={e => {
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        placeholder="Enter the activity details"
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                    />
+                                                                </div>
+                                                            )
+                                                        ))}
+                                                    </div>
+                                                ));
+                                            case 'drop':
+                                                return renderMainSection('drop', dropdownIndex, (
+                                                    <div>
+                                                        {localData.dropDetails.map((detail, detailIndex) => (
+                                                            <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
+                                                                {isPreview ? (
+                                                                    detail ? (
+                                                                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0' }}>
+                                                                            <span style={{
+                                                                                fontFamily: 'Lato',
+                                                                                fontSize: '20px',
+                                                                                fontStyle: 'normal',
+                                                                                fontWeight: 400,
+                                                                                width: '820px',
+                                                                                minHeight: '32px',
+                                                                                lineHeight: '32px',
+                                                                                background: 'transparent',
+                                                                                textAlign: 'justify',
+                                                                                display: 'inline-block',
+                                                                                whiteSpace: 'pre-line',
+                                                                                boxSizing: 'border-box',
+                                                                                padding: 0,
+                                                                            }}>{detail}</span>
+                                                                        </div>
+                                                                    ) : null
+                                                                ) : (
+                                                                    <textarea
+                                                                        id={getUniqueId('drop_details', detailIndex)}
+                                                                        name={getUniqueId('drop_details', detailIndex)}
+                                                                        value={detail}
+                                                                        onChange={e => {
+                                                                            handleSubFieldChange('drop', detailIndex, e.target.value);
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        onInput={e => {
+                                                                            e.target.style.height = 'auto';
+                                                                            e.target.style.height = e.target.scrollHeight + 'px';
+                                                                        }}
+                                                                        placeholder="Enter the drop details"
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ));
+                                            default:
+                                                return null;
+                                        }
+                                    } else {
+                                        // Dynamic section (including image)
+                                        const section = localData.dynamicSections.find(s => s.id === sectionId);
+                                        if (!section) return null;
+                                        return renderDynamicSection(section, idx);
                                     }
-                                } else {
-                                    // Dynamic section (including image)
-                                    const section = localData.dynamicSections.find(s => s.id === sectionId);
-                                    if (!section) return null;
-                                    return renderDynamicSection(section, idx);
-                                }
-                            })}
-                        </SortableContext>
-                    </DndContext>
-                </div>
+                                })}
+                            </SortableContext>
+                        </DndContext>
+                    </div>
 
-                {/* Use the AddSectionTray component - No limit for dynamic sections */}
-                {!isPreview && <AddSectionTray onAddSection={handleAddSection} />}
+                    {/* Use the AddSectionTray component - No limit for dynamic sections */}
+                    {!isPreview && <AddSectionTray onAddSection={handleAddSection} />}
+                </div>
+            </div>
+
+            {/* Footer - Fixed at bottom */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+                <Footer pageNumber={pageNumber} />
             </div>
         </div>
-
-        {/* Footer - Fixed at bottom */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-            <Footer pageNumber={pageNumber} />
-        </div>
-    </div>
-);
+    );
 }
 
 export default DayPage;
