@@ -89,7 +89,7 @@ export default function LoginPage({ onLogin }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: 18,
+                gap: 16,
                 alignSelf: 'stretch'
               }}
             >
