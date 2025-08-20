@@ -796,6 +796,12 @@ const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
     };
 
     // Render the section normally
+    // Add hover state for heading background
+    const [isHeadingHovered, setIsHeadingHovered] = useState(false);
+    // Only apply hover effect for these section keys
+    const GREY_BG_SECTIONS = ['arrival', 'transfer', 'drop', 'hotel', 'activity', 'restaurant'];
+    const shouldGreyBg = GREY_BG_SECTIONS.includes(sectionKey);
+
     return (
         <SortableSection
             key={sectionKey}
@@ -812,7 +818,19 @@ const renderMainSection = (sectionKey, dropdownIndex, sectionData) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', flex: '1 0 0' }}>
-                <div style={{ display: 'flex', padding: '0 0 4px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        padding: '0 0 4px 16px',
+                        alignItems: 'center',
+                        alignSelf: 'stretch',
+                        borderRadius: '8px',
+                        background: shouldGreyBg && isHeadingHovered ? '#F4F4F6' : 'transparent',
+                        transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={() => shouldGreyBg && setIsHeadingHovered(true)}
+                    onMouseLeave={() => shouldGreyBg && setIsHeadingHovered(false)}
+                >
                     {isPreview ? (
                         <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
                             {localData.sectionHeadings[sectionKey]}
