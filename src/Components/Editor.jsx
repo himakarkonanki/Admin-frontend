@@ -1,6 +1,11 @@
 import React, { useState, useRef } from 'react';
 // Custom styles for Quill editor content
 const quillCustomStyles = `
+  .ql-container {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #fff;
+  }
   .ql-editor {
     font-family: 'Lato', sans-serif;
     font-size: 20px;
@@ -11,6 +16,20 @@ const quillCustomStyles = `
     background: #fff;
     border-radius: 12px;
     outline: none;
+  }
+  /* Remove list indentation in editing mode */
+  .ql-editor ol,
+  .ql-editor ul {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+  .custom-dropdown-option {
+    transition: background 0.15s;
+    border-radius: 6px;
+    padding: 4px 8px;
+  }
+  .custom-dropdown-option:hover, .custom-dropdown-option:focus {
+    background: #f0f0f0;
   }
 `;
 import ReactQuill from 'react-quill';
@@ -43,19 +62,21 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
   }, [showToolbar]);
 
   // Styling to mimic input
+  // Adjust left margin to align input bar with section title (e.g., 'TRANSFER')
   const inputStyle = {
     height: 'auto',
     width: '100%',
-    borderRadius: '2px',
+    borderRadius: '10px',
     background: '#fff',
     fontFamily: 'Lato',
     fontSize: 20,
     fontWeight: 400,
-    padding: '0px 2px ', // Add left padding for plus icon, but not too much for lists
+    padding: '6px 8px',
     color: '#0E1328',
     outline: 'none',
     overflow: 'hidden',
     minHeight: 40,
+    marginLeft: -12, // Adjust this value to match the left edge of the section title
   };
 
   // Custom format handler
@@ -113,16 +134,17 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
             padding: 12,
             display: 'flex',
             flexDirection: 'column',
+            transition: 'all 0.3s ease',
             gap: 8,
             minWidth: 180,
             cursor: 'pointer',
           }}
         >
-          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('list', 'ordered')}>Ordered List</option>
-          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('list', 'bullet')}>Unordered List</option>
-          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('underline')}>Underline</option>
-          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('bold')}>Bold</option>
-          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('italic')}>Italic</option>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('list', 'ordered')}>Ordered List</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('list', 'bullet')}>Unordered List</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('underline')}>Underline</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('bold')}>Bold</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('italic')}>Italic</div>
         </div>
       )}
       <ReactQuill

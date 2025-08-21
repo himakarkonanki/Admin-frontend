@@ -284,11 +284,11 @@ export class PDFGenerator {
                             margin: 0 0 10px 0;
                             padding: 0;
                         }
-                        .pdf-page[data-page-type="day"] .ql-editor ol,
-                        .pdf-page[data-page-type="day"] .ql-editor ul {
-                            margin: 0 0 10px 0;
-                            padding-left: 2em;
-                        }
+                            .pdf-page[data-page-type="day"] .ql-editor ol,
+                            .pdf-page[data-page-type="day"] .ql-editor ul {
+                                margin: 0 0 10px 0;
+                                padding-left: 40px; /* Adjust this value to match the left edge of the section title */
+                            }
                         .pdf-page[data-page-type="day"] .ql-editor li {
                             list-style-type: none;
                             padding-left: 0.5em;
