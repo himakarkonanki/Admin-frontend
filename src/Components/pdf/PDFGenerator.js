@@ -202,27 +202,129 @@ export class PDFGenerator {
     // Create complete HTML document with styles
     static createHTMLDocument(pagesHTML) {
         // Inline Quill snow theme CSS (minified, partial for PDF, can be extended)
-        const quillSnowCSS = `
-        .ql-container{box-sizing:border-box;font-family:Lato,sans-serif;font-size:20px; font-weight:400;height:100%;margin:0;position:relative;}
-        .ql-editor{box-sizing:border-box;line-height:1.42;height:100%;outline:none;overflow-y:auto;padding:12px 15px;tab-size:4;-moz-tab-size:4;text-align:left;white-space:pre-wrap;word-wrap:break-word;}
-        .ql-editor > *{cursor:text;}
-        .ql-editor p,.ql-editor ol,.ql-editor pre,.ql-editor blockquote,.ql-editor h1,.ql-editor h2,.ql-editor h3,.ql-editor h4,.ql-editor h5,.ql-editor h6{margin:0;padding:0;}
-        .ql-editor table{border-collapse:collapse;}
-        .ql-editor td{border:1px solid #000;padding:2px 5px;}
-        .ql-editor ol{padding-left:1.5em;}
-        .ql-editor li{list-style-type:none;padding-left:1.5em;position:relative;}
-        .ql-editor li > .ql-ui:before{display:inline-block;margin-left:-1.5em;margin-right:.3em;text-align:right;white-space:nowrap;width:1.2em;}
-    .ql-editor li[data-list=bullet] > .ql-ui:before{content:"\\2022";}
-    .ql-editor li[data-list=checked] > .ql-ui:before{content:"\\2611";}
-    .ql-editor li[data-list=unchecked] > .ql-ui:before{content:"\\2610";}
-        .ql-editor li[data-list=ordered]{counter-increment:list-0;}
-        .ql-editor li[data-list=ordered] > .ql-ui:before{content:counter(list-0, decimal) '. ';}
-        .ql-editor .ql-align-center{text-align:center;}
-        .ql-editor .ql-align-justify{text-align:justify;}
-        .ql-editor .ql-align-right{text-align:right;}
-        .ql-editor img{max-width:100%;}
-        .ql-editor.ql-blank::before{color:rgba(0,0,0,0.6);content:attr(data-placeholder);font-style:italic;left:15px;pointer-events:none;position:absolute;right:15px;}
-        `;
+            const quillSnowCSS = `
+                        /* Quill snow theme for .ql-editor, scoped to day pages only */
+                        /* Quill formatting styles for day page PDF */
+                        .pdf-page[data-page-type="day"] .ql-editor b,
+                        .pdf-page[data-page-type="day"] .ql-editor strong {
+                            font-weight: bold;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor i,
+                        .pdf-page[data-page-type="day"] .ql-editor em {
+                            font-style: italic;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor u {
+                            text-decoration: underline;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor s {
+                            text-decoration: line-through;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor a {
+                            color: #1976d2;
+                            text-decoration: underline;
+                            cursor: pointer;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor blockquote {
+                            border-left: 4px solid #ccc;
+                            margin: 0 0 8px 0;
+                            padding: 4px 0 4px 16px;
+                            color: #555;
+                            font-style: italic;
+                            background: #f9f9f9;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor code {
+                            background: #f3f3f3;
+                            color: #c7254e;
+                            font-family: 'Fira Mono', 'Consolas', 'Monaco', monospace;
+                            padding: 2px 4px;
+                            border-radius: 4px;
+                            font-size: 0.95em;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor pre {
+                            background: #f3f3f3;
+                            color: #333;
+                            font-family: 'Fira Mono', 'Consolas', 'Monaco', monospace;
+                            padding: 8px 12px;
+                            border-radius: 6px;
+                            font-size: 0.98em;
+                            margin: 8px 0;
+                            overflow-x: auto;
+                        }
+                .pdf-page[data-page-type="day"] .ql-container {
+                    box-sizing: border-box;
+                    font-family: Lato, sans-serif;
+                    font-size: 20px;
+                    font-weight: 400;
+                    height: 100%;
+                    margin: 0;
+                    position: relative;
+                }
+                        .pdf-page[data-page-type="day"] .ql-editor {
+                            box-sizing: border-box;
+                            line-height: 1.6;
+                            height: 100%;
+                            outline: none;
+                            overflow-y: auto;
+                            padding: 8px 0 8px 0;
+                            tab-size: 4;
+                            -moz-tab-size: 4;
+                            text-align: left;
+                            white-space: pre-wrap;
+                            word-wrap: break-word;
+                            font-family: 'Lato', sans-serif;
+                            font-size: 20px;
+                            font-weight: 400;
+                            color: #0E1328;
+                            background: #fff;
+                            border-radius: 12px;
+                            min-height: 40px;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor > * { cursor: text; }
+                        .pdf-page[data-page-type="day"] .ql-editor p {
+                            margin: 0 0 10px 0;
+                            padding: 0;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor ol,
+                        .pdf-page[data-page-type="day"] .ql-editor ul {
+                            margin: 0 0 10px 0;
+                            padding-left: 2em;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor li {
+                            list-style-type: none;
+                            padding-left: 0.5em;
+                            margin-bottom: 4px;
+                            position: relative;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor li:before { position: absolute; left: -1.2em; }
+                        .pdf-page[data-page-type="day"] .ql-editor li[data-list="bullet"]:before { content: "\\2022"; font-size: 1.2em; left: -1.2em; top: 0.1em; color: #0E1328; }
+                        .pdf-page[data-page-type="day"] .ql-editor li[data-list="ordered"] {
+                            counter-increment: ql-list-0;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor ol {
+                            counter-reset: ql-list-0;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor li[data-list="ordered"]:before {
+                            content: counter(ql-list-0, decimal) '. ';
+                            font-size: 1.2em;
+                            left: -1.2em;
+                            top: 0.1em;
+                            color: #0E1328;
+                        }
+                        .pdf-page[data-page-type="day"] .ql-editor .ql-align-center { text-align: center; }
+                        .pdf-page[data-page-type="day"] .ql-editor .ql-align-justify { text-align: justify; }
+                        .pdf-page[data-page-type="day"] .ql-editor .ql-align-right { text-align: right; }
+                        .pdf-page[data-page-type="day"] .ql-editor img { max-width: 100%; }
+                        .pdf-page[data-page-type="day"] .ql-editor.ql-blank::before {
+                            color: rgba(0,0,0,0.6);
+                            content: attr(data-placeholder);
+                            font-style: italic;
+                            left: 15px;
+                            pointer-events: none;
+                            position: absolute;
+                            right: 15px;
+                        }
+                /* End Quill snow theme for day page only */
+                `;
         return `<!DOCTYPE html>
 <html lang="en">
 <head>

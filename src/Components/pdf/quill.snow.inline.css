@@ -1,2 +1,52 @@
+/* Quill Snow Theme list styles for PDF bullets and numbers */
+.ql-editor ul,
+.ql-editor ol {
+	padding-left: 1.5em;
+}
+.ql-editor ul {
+	list-style-type: disc;
+}
+.ql-editor ol {
+	list-style-type: decimal;
+}
+.ql-editor li {
+	margin-bottom: 0.2em;
+}
+.ql-editor ul[data-checked] {
+	pointer-events: none;
+}
+.ql-editor ul[data-checked] > li::before {
+	content: '\2610';
+	margin-right: 0.5em;
+}
+.ql-editor ul[data-checked=true] > li::before {
+	content: '\2611';
+}
 /* This file is used to inline Quill's snow theme CSS for PDF generation. */
-@import url('https://cdn.jsdelivr.net/npm/quill/dist/quill.snow.css');
+/* Inlined Quill Snow Theme and custom styles for PDF generation */
+.ql-editor {
+	font-family: 'Lato', sans-serif;
+	font-size: 20px;
+	font-weight: 400;
+	color: #0E1328;
+	padding: 0px 2px;
+	min-height: 40px;
+	background: #fff;
+	border-radius: 12px;
+	outline: none;
+}
+/* --- Quill Snow Theme (core parts only, for PDF) --- */
+.ql-container.ql-snow {
+	border: 1px solid #ccc;
+	border-radius: 12px;
+}
+.ql-toolbar.ql-snow {
+	border: 1px solid #ccc;
+	border-bottom: none;
+	border-radius: 12px 12px 0 0;
+}
+.ql-editor.ql-blank::before {
+	color: #aaa;
+	font-style: italic;
+}
+/* Add more Quill snow theme rules as needed for PDF fidelity */

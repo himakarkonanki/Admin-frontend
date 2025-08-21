@@ -1,47 +1,34 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useQuill } from 'react-quilljs';
-import 'quill/dist/quill.snow.css';
-import add from '../assets/icons/add_2.svg'
+import React, { useState, useRef } from 'react';
+// Custom styles for Quill editor content
+const quillCustomStyles = `
+  .ql-editor {
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #0E1328;
+    padding: 6px 2px;
+    min-height: 40px;
+    background: #fff;
+    border-radius: 12px;
+    outline: none;
+  }
+`;
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import add from '../assets/icons/add_2.svg';
 
-const toolbarOptions = [
-  ['bold', 'italic', 'underline'],
-  [{ 'header': 1 }, { 'header': 2 }],
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  ['clean']
-];
+const modules = {
+  toolbar: false // We'll use our own custom toolbar
+};
 
 const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
   const [showToolbar, setShowToolbar] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const dropdownRef = useRef(null);
-  const { quill, quillRef } = useQuill({
-    modules: { toolbar: false },
-    theme: 'snow',
-    placeholder,
-  });
-
-  // Set value from parent
-  useEffect(() => {
-    if (quill && value !== undefined) {
-      const current = quill.root.innerHTML;
-      if (value !== current) {
-        quill.root.innerHTML = value || '';
-      }
-    }
-  }, [quill, value]);
-
-  // Listen for changes
-  useEffect(() => {
-    if (quill && onChange) {
-      const handler = () => {
-        onChange(quill.root.innerHTML === '<p><br></p>' ? '' : quill.root.innerHTML);
-      };
-      quill.on('text-change', handler);
-      return () => quill.off('text-change', handler);
-    }
-  }, [quill, onChange]);
+  const quillRef = useRef(null);
 
   // Handle click outside to close dropdown
-  useEffect(() => {
+  React.useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowToolbar(false);
@@ -59,23 +46,31 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
   const inputStyle = {
     height: 'auto',
     width: '100%',
-    borderRadius: '12px',
+    borderRadius: '2px',
     background: '#fff',
     fontFamily: 'Lato',
     fontSize: 20,
     fontWeight: 400,
-  padding: '0px 2px ',// Add left padding for plus icon, but not too much for lists
-    color:'#0E1328',
+    padding: '0px 2px ', // Add left padding for plus icon, but not too much for lists
+    color: '#0E1328',
     outline: 'none',
     overflow: 'hidden',
+    minHeight: 40,
   };
 
-  const [isFocused, setIsFocused] = useState(false);
+  // Custom format handler
+  const handleFormat = (format, value = true) => {
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+      editor.format(format, value);
+      setShowToolbar(false);
+    }
+  };
 
   return (
-    <div
-      style={{ position: 'relative', ...style }}
-    >
+    <div style={{ position: 'relative', ...style }}>
+      {/* Inject custom styles for Quill editor */}
+      <style>{quillCustomStyles}</style>
       {/* Plus icon button, only show on focus */}
       {isFocused && (
         <button
@@ -110,7 +105,7 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
             position: 'absolute',
             top: 32,
             left: -18,
-            zIndex:10,
+            zIndex: 10,
             background: '#fff',
             border: '1px solid #ccc',
             borderRadius: 8,
@@ -123,20 +118,22 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
             cursor: 'pointer',
           }}
         >
-                    <option style={{color:'#0E1328', fontSize: 16, fontFamily:'Lato' ,fontWeight: 400}} onClick={() => { quill && quill.format('list', 'ordered'); setShowToolbar(false); }}>Ordered List</option>
-          <option style={{color:'#0E1328', fontSize: 16, fontFamily:'Lato' ,fontWeight: 400}} onClick={() => { quill && quill.format('list', 'bullet'); setShowToolbar(false); }}>Unordered List</option>
-          <option style={{color:'#0E1328', fontSize: 16, fontFamily:'Lato' ,fontWeight: 400}} onClick={() => { quill && quill.format('underline', true); setShowToolbar(false); }}>Underline</option>
-          <option style={{color:'#0E1328', fontSize: 16, fontFamily:'Lato' ,fontWeight: 400}} onClick={() => { quill && quill.format('bold', true); setShowToolbar(false); }}>Bold</option>
-          <option style={{color:'#0E1328', fontSize: 16, fontFamily:'Lato' ,fontWeight: 400}} onClick={() => { quill && quill.format('italic', true); setShowToolbar(false); }}>Italic</option>
-
+          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('list', 'ordered')}>Ordered List</option>
+          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('list', 'bullet')}>Unordered List</option>
+          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('underline')}>Underline</option>
+          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('bold')}>Bold</option>
+          <option style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} onClick={() => handleFormat('italic')}>Italic</option>
         </div>
       )}
-      <div
+      <ReactQuill
         ref={quillRef}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        modules={modules}
         style={inputStyle}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        tabIndex={0}
       />
     </div>
   );
