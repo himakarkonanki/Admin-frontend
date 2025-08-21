@@ -712,6 +712,33 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     // Copy handler for main sections (moved out)
+    // Duplicate main section (copy handler)
+    const handleCopyMainSection = (sectionKey) => {
+        // Only allow duplication for main sections that are visible
+        if (!localData.visibleSections[sectionKey]) return;
+        const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
+        const fieldName = `${key}Details`;
+        const detailsArr = Array.isArray(localData[fieldName]) ? localData[fieldName].map(d => (typeof d === 'object' ? { ...d } : d)) : [''];
+        // Generate a new dynamic section with the same content
+        const uniqueId = `dynamic_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const newSection = {
+            id: uniqueId,
+            heading: localData.sectionHeadings[key] || key.charAt(0).toUpperCase() + key.slice(1),
+            icon: localData.icons[key],
+            type: key.charAt(0).toUpperCase() + key.slice(1),
+            details: detailsArr
+        };
+        // Insert after the main section in order array
+        const sectionId = `main_${key}`;
+        const orderIdx = localData.allSectionsOrder.indexOf(sectionId);
+        const updatedOrder = [
+            ...localData.allSectionsOrder.slice(0, orderIdx + 1),
+            uniqueId,
+            ...localData.allSectionsOrder.slice(orderIdx + 1)
+        ];
+        const updatedSections = [...localData.dynamicSections, newSection];
+        updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
+    };
     const handleDeleteMainSection = (sectionKey) => {
         // Support both 'transfer' and 'transport' for backward compatibility
         const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
