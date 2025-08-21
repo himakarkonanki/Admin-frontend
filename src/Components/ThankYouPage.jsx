@@ -4,7 +4,7 @@ import Footer from './Footer';
 import instagram from '../assets/icons/Instagram.svg';
 import facebook from '../assets/icons/meta.svg';
 import linkedin from '../assets/icons/linkedin.svg';
-import whatsapp from '../assets/icons/whatsapp.png';
+import whatsapp from '../assets/icons/whatsapp.svg';
 
 const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = false, totalPages }) => {
     const [base64Image, setBase64Image] = useState('');

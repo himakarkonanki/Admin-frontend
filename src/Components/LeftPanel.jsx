@@ -140,7 +140,7 @@ function SortablePageItem({
               fontFamily: 'Lato',
               fontSize: '14px',
               fontStyle: 'normal',
-              fontWeight: 600,
+              fontWeight: (hoveredItem === `page-${page.id}` ? 700 : 400),
               lineHeight: '20px',
             }}>
               {page.type === 'policy' ? 'Terms & Conditions' :
@@ -399,7 +399,7 @@ function LeftPanel({
             fontFamily: 'Lato',
             fontSize: '14px',
             fontStyle: 'normal',
-            fontWeight: 600,
+            fontWeight: 400,
             lineHeight: '20px',
           }}>
             {title}

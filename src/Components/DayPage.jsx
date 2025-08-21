@@ -288,12 +288,12 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
 
     const handleSubFieldChange = (sectionKey, index, value) => {
-        // Support both 'transfer' and 'transport' for backward compatibility
-        const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
-        const fieldName = `${key}Details`;
-        const newSubFields = [...localData[fieldName]];
-        newSubFields[index] = value;
-        updateParent({ [fieldName]: newSubFields });
+    // Always use 'transport' for section keys
+    const key = sectionKey;
+    const fieldName = `${key}Details`;
+    const newSubFields = [...localData[fieldName]];
+    newSubFields[index] = value;
+    updateParent({ [fieldName]: newSubFields });
     };
 
     // Handle meal toggle
@@ -306,10 +306,11 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     const handleSectionHeadingChange = (key, value) => {
-        // If the user tries to set 'transfer' to 'Transfer', force it to 'Transport'
+        // Always use 'transport' for section keys
+    const k = key;
         const updatedHeadings = {
             ...localData.sectionHeadings,
-            [key]: key === 'transfer' ? 'Transport' : value
+            [k]: value
         };
         updateParent({ sectionHeadings: updatedHeadings });
     };
@@ -362,8 +363,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     const handleIconChange = (key, iconValue, heading) => {
-        // Support both 'transfer' and 'transport' for backward compatibility
-        const k = key === 'transfer' ? 'transport' : key;
+        // Always use 'transport' for section keys
+    const k = key;
         const updatedIcons = { ...localData.icons, [k]: iconValue };
         const updatedHeadings = { ...localData.sectionHeadings, [k]: heading };
         updateParent({
@@ -697,7 +698,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     // --- Manage main section heading hover state in parent ---
-    const GREY_BG_SECTIONS = ['arrival', 'transfer', 'drop', 'hotel', 'activity', 'restaurant'];
+    const GREY_BG_SECTIONS = ['arrival', 'transport', 'drop', 'hotel', 'activity', 'restaurant'];
     const [mainSectionHover, setMainSectionHover] = useState({});
 
     const handleMainSectionMouseEnter = (sectionKey) => {
@@ -714,18 +715,34 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     // Copy handler for main sections (moved out)
     // Duplicate main section (copy handler)
     const handleCopyMainSection = (sectionKey) => {
-        // Only allow duplication for main sections that are visible
-        if (!localData.visibleSections[sectionKey]) return;
-        const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
-        const fieldName = `${key}Details`;
-        const detailsArr = Array.isArray(localData[fieldName]) ? localData[fieldName].map(d => (typeof d === 'object' ? { ...d } : d)) : [''];
+    // Only allow duplication for main sections that are visible
+    if (!localData.visibleSections[sectionKey]) return;
+    const key = sectionKey;
+    const fieldName = `${key}Details`;
+
+        // Convert main section details (array of strings) to dynamic section details (array of { value })
+        let detailsArr = [];
+        if (Array.isArray(localData[fieldName])) {
+            detailsArr = localData[fieldName].map(d => ({ value: d }));
+        } else if (localData[fieldName]) {
+            detailsArr = [{ value: localData[fieldName] }];
+        } else {
+            detailsArr = [{ value: '' }];
+        }
+
+    // Deep copy heading and icon (with fallback for transport)
+    const heading = localData.sectionHeadings[key] || key.charAt(0).toUpperCase() + key.slice(1);
+    let icon = localData.icons[key];
+    if (!icon && key === 'transport') icon = 'CarFront';
+    const type = key.charAt(0).toUpperCase() + key.slice(1);
+
         // Generate a new dynamic section with the same content
         const uniqueId = `dynamic_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
         const newSection = {
             id: uniqueId,
-            heading: localData.sectionHeadings[key] || key.charAt(0).toUpperCase() + key.slice(1),
-            icon: localData.icons[key],
-            type: key.charAt(0).toUpperCase() + key.slice(1),
+            heading,
+            icon,
+            type,
             details: detailsArr
         };
         // Insert after the main section in order array
@@ -740,8 +757,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
         updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
     };
     const handleDeleteMainSection = (sectionKey) => {
-        // Support both 'transfer' and 'transport' for backward compatibility
-        const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
+        // Always use 'transport' for section keys
+    const key = sectionKey;
         const updatedVisibleSections = {
             ...localData.visibleSections,
             [key]: false
@@ -761,20 +778,6 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
             allSectionsOrder: updatedOrder,
             ...clearedData
         });
-    // The following code block was likely misplaced and is now commented out or removed for syntax correctness
-    //     icon: map.icon,
-    //     heading: map.heading,
-    //     details: detailsArr,
-    // };
-    // const sectionId = `main_${sectionKey}`;
-    // const orderIdx = localData.allSectionsOrder.indexOf(sectionId);
-    // const updatedOrder = [
-    //     ...localData.allSectionsOrder.slice(0, orderIdx + 1),
-    //     uniqueId,
-    //     ...localData.allSectionsOrder.slice(orderIdx + 1)
-    // ];
-    // const updatedSections = [...localData.dynamicSections, newSection];
-    // updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
     };
 
     // --- Render main section as a JSX block, not a function with hooks ---
