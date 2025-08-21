@@ -5,6 +5,7 @@ const quillCustomStyles = `
     border-radius: 12px !important;
     overflow: hidden !important;
     background: #fff;
+    border: none !important;
   }
   .ql-editor {
     font-family: 'Lato', sans-serif;
@@ -16,6 +17,16 @@ const quillCustomStyles = `
     background: #fff;
     border-radius: 12px;
     outline: none;
+    border: none !important;
+  }
+  .ql-editor.ql-blank::before {
+    font-style: normal !important;
+    font-family: 'Lato', sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 400 !important;
+    color: rgba(14, 19, 40, 0.24) !important;
+    opacity: 1 !important;
+    margin-left: -15px !important;
   }
   /* Remove list indentation in editing mode */
   .ql-editor ol,
@@ -71,12 +82,12 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
     fontFamily: 'Lato',
     fontSize: 20,
     fontWeight: 400,
-    padding: '2px 8px',
+    padding: '4px 6px',
     color: '#0E1328',
     outline: 'none',
     overflow: 'hidden',
     minHeight: 40,
-    marginLeft: -12, // Adjust this value to match the left edge of the section title
+    marginLeft: -5, // Adjust this value to match the left edge of the section title
   };
 
   // Custom format handler

@@ -143,7 +143,10 @@ function SortablePageItem({
               fontWeight: 600,
               lineHeight: '20px',
             }}>
-              {page.type === 'policy' ? 'Terms & Conditions' : page.title}
+              {page.type === 'policy' ? 'Terms & Conditions' :
+                page.type === 'day'
+                  ? `Day ${pages.filter(p => p.type === 'day').findIndex(p => p.id === page.id) + 1}`
+                  : page.title}
             </div>
           </div>
 

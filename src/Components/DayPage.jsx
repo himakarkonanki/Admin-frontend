@@ -502,12 +502,14 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                             alignItems: 'center',
                             alignSelf: 'stretch',
                             borderRadius: '8px',
-                            background: hoveredSection === sectionHoverId ? '#F4F4F6' : 'transparent',
+                            background: !isPreview && hoveredSection === sectionHoverId ? '#F4F4F6' : 'transparent',
                             transition: 'background 0.2s',
                             cursor: !isPreview ? 'pointer' : 'default'
                         }}
-                        onMouseEnter={() => setHoveredSection(sectionHoverId)}
-                        onMouseLeave={() => setHoveredSection(null)}
+                        {...(!isPreview ? {
+                            onMouseEnter: () => setHoveredSection(sectionHoverId),
+                            onMouseLeave: () => setHoveredSection(null)
+                        } : {})}
                     >
                         {isPreview ? (
                             <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
@@ -649,7 +651,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                             value={detail.value || ''}
                                             onChange={val => handleDynamicSectionChange(section.id, 'details', { ...detail, value: val }, detailIndex)}
                                             placeholder={`Enter ${section.heading.toLowerCase()} details`}
-                                            style={{ width: '820px', minHeight: '32px' }}
+                                            style={{ width: '820px', minHeight: '32px', fontStyle: 'normal' }}
                                         />
                                     )}
                                 </div>
@@ -683,7 +685,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                         value={section.details.value || ''}
                                         onChange={val => handleDynamicSectionChange(section.id, 'details', { ...section.details, value: val })}
                                         placeholder={`Enter ${section.heading.toLowerCase()} details`}
-                                        
+                                        style={{ fontStyle: 'normal' }}
                                     />
                                 )}
                             </div>
@@ -786,11 +788,13 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                             alignItems: 'center',
                             alignSelf: 'stretch',
                             borderRadius: '8px',
-                            background: shouldGreyBg && isHeadingHovered ? '#F4F4F6' : 'transparent',
+                            background: !isPreview && shouldGreyBg && isHeadingHovered ? '#F4F4F6' : 'transparent',
                             transition: 'background 0.2s',
                         }}
-                        onMouseEnter={() => handleMainSectionMouseEnter(sectionKey)}
-                        onMouseLeave={() => handleMainSectionMouseLeave(sectionKey)}
+                        {...(!isPreview ? {
+                            onMouseEnter: () => handleMainSectionMouseEnter(sectionKey),
+                            onMouseLeave: () => handleMainSectionMouseLeave(sectionKey)
+                        } : {})}
                     >
                         {isPreview ? (
                             <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
@@ -1042,7 +1046,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                         value={detail}
                                                                         onChange={val => handleSubFieldChange('arrival', detailIndex, val)}
                                                                         placeholder="Enter the arrival details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', width: '820px', minHeight: '32px', padding: 0 }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontWeight: 400, lineHeight: '32px', width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
                                                                     />
                                                                 )}
                                                             </div>
@@ -1067,7 +1071,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                         value={detail}
                                                                         onChange={val => handleSubFieldChange('transport', detailIndex, val)}
                                                                         placeholder="Enter the transport details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontWeight: 400, width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
                                                                     />
                                                                 )}
                                                             </div>
@@ -1093,7 +1097,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                         value={detail}
                                                                         onChange={val => handleSubFieldChange('activity', detailIndex, val)}
                                                                         placeholder="Enter the activity details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20,  fontWeight: 400, width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
                                                                     />
                                                                 </div>
                                                             )
@@ -1118,7 +1122,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                         value={detail}
                                                                         onChange={val => handleSubFieldChange('drop', detailIndex, val)}
                                                                         placeholder="Enter the drop details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20,  fontWeight: 400, width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
                                                                     />
                                                                 )}
                                                             </div>
