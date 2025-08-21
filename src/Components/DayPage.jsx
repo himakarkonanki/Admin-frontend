@@ -527,7 +527,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                         onMouseLeave={() => setHoveredSection(null)}
                     >
                         {isPreview ? (
-                            <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
+                            <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
                                 {section.heading}
                             </div>
                         ) : (
@@ -537,7 +537,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                 id={getUniqueId('dynamic_section_heading', section.id)}
                                 name={getUniqueId('dynamic_section_heading', section.id)}
                                 onChange={(e) => handleDynamicSectionChange(section.id, 'heading', e.target.value)}
-                                style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
+                                style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
                             />
                         )}
 
@@ -801,7 +801,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                         onMouseLeave={() => handleMainSectionMouseLeave(sectionKey)}
                     >
                         {isPreview ? (
-                            <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
+                            <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
                                 {localData.sectionHeadings[sectionKey]}
                             </div>
                         ) : (
@@ -811,7 +811,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                 name={getUniqueId(`${sectionKey}_heading`)}
                                 value={localData.sectionHeadings[sectionKey]}
                                 onChange={(e) => handleSectionHeadingChange(sectionKey, e.target.value)}
-                                style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 500, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
+                                style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
                             />
                         )}
 

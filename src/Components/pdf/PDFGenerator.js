@@ -1,4 +1,4 @@
-import 'quill/dist/quill.snow.css';
+import 'react-quill/dist/quill.snow.css';
 export class PDFGenerator {
     // PDF generation main method
     static async generateAndDownload({ pages, pagesContainerRef, onProgress }) {
@@ -287,7 +287,7 @@ export class PDFGenerator {
                             .pdf-page[data-page-type="day"] .ql-editor ol,
                             .pdf-page[data-page-type="day"] .ql-editor ul {
                                 margin: 0 0 10px 0;
-                                padding-left: 40px; /* Adjust this value to match the left edge of the section title */
+                                padding-left: 28px; /* Reduced for less indentation */
                             }
                         .pdf-page[data-page-type="day"] .ql-editor li {
                             list-style-type: none;
@@ -295,8 +295,8 @@ export class PDFGenerator {
                             margin-bottom: 4px;
                             position: relative;
                         }
-                        .pdf-page[data-page-type="day"] .ql-editor li:before { position: absolute; left: -1.2em; }
-                        .pdf-page[data-page-type="day"] .ql-editor li[data-list="bullet"]:before { content: "\\2022"; font-size: 1.2em; left: -1.2em; top: 0.1em; color: #0E1328; }
+                        .pdf-page[data-page-type="day"] .ql-editor li:before { position: absolute; left: -12px; }
+                        .pdf-page[data-page-type="day"] .ql-editor li[data-list="bullet"]:before { content: "\\2022"; font-size: 1.2em; left: -12px; top: 0.1em; color: #0E1328; }
                         .pdf-page[data-page-type="day"] .ql-editor li[data-list="ordered"] {
                             counter-increment: ql-list-0;
                         }
@@ -306,7 +306,7 @@ export class PDFGenerator {
                         .pdf-page[data-page-type="day"] .ql-editor li[data-list="ordered"]:before {
                             content: counter(ql-list-0, decimal) '. ';
                             font-size: 1.2em;
-                            left: -1.2em;
+                            left: -12px;
                             top: 0.1em;
                             color: #0E1328;
                         }
@@ -332,6 +332,10 @@ export class PDFGenerator {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Itinerary PDF</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+  rel="stylesheet"
+  href="https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css"
+/>
     <style>
         ${this.getGlobalStyles()}
         ${quillSnowCSS}
