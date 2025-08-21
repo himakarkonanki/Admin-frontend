@@ -9,7 +9,6 @@ import PolicyPage from './PolicyPage'
 import PolicyPagePreview from './PolicyPagePreview'
 import ThankYouPage from './ThankYouPage'
 import { PDFGenerator } from './pdf/PDFGenerator'
-import watermark from '../assets/icons/watermark.svg'
 
 function PreviewPane({ onClose, pages, getPolicyPageData }) {
     const pagesContainerRef = useRef(null);
