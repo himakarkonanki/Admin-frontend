@@ -1,5 +1,7 @@
 import React from 'react';
 import Footer from './Footer';
+import Watermark from './Watermark';
+import watermark from '../assets/icons/watermark.svg';
 
 function PolicyPagePreview({ data, pageNumber, isPDFMode = false }) {
   console.log('PolicyPagePreview received data:', data);
@@ -294,6 +296,8 @@ function PolicyPagePreview({ data, pageNumber, isPDFMode = false }) {
 
   return (
     <div style={styles.container}>
+  {/* Watermark for preview and PDF mode */}
+  <Watermark svgSrc={watermark} />
       {/* <div style={styles.contentWrapper}> */}
         <div style={styles.contentArea}>
           {data.blocks && data.blocks.length > 0 ? (

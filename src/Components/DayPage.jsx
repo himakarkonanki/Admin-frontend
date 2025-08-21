@@ -32,6 +32,8 @@ import taxi from '../assets/icons/local_taxi.svg'
 import drag from '../assets/icons/drag_indicator_2.svg';
 import copy from '../assets/icons/content_copy.svg';
 import close from '../assets/icons/close.svg';
+import Watermark from './Watermark';
+import watermark from '../assets/icons/watermark.svg';
 
 
 // Import components
@@ -129,8 +131,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     // Initialize local state from pageData
     const [localData, setLocalData] = useState({
         destination: '',
-    arrivalDetails: [''],
-    transportDetails: [''],
+        arrivalDetails: [''],
+        transportDetails: [''],
         dropDetails: [''],
         activityDetails: [''],
         uploadedImage: null,
@@ -158,9 +160,10 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
             activity: true,
             drop: true
         },
-    // Unified order for all sections (main and dynamic)
-    allSectionsOrder: ['main_arrival', 'main_transport', 'main_activity', 'main_drop']
+        // Unified order for all sections (main and dynamic)
+        allSectionsOrder: ['main_arrival', 'main_transport', 'main_activity', 'main_drop']
     });
+
 
     const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
     const [hoveredSection, setHoveredSection] = useState(null);
@@ -914,6 +917,10 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
     return (
         <div style={{ display: 'flex', width: '1088px', height: '1540px', flexDirection: 'column', backgroundColor: '#fff', position: 'relative', overflow: 'hidden' }}>
+            {/* Watermark for preview mode */}
+            {isPreview && (
+                <Watermark svgSrc={watermark} />
+            )}
             {/* Hidden file input for both initial upload and changing image */}
             {!isPreview && (
                 <input
@@ -1177,7 +1184,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     {!isPreview && <AddSectionTray onAddSection={handleAddSection} />}
                 </div>
             </div>
-
+                                
             {/* Footer - Fixed at bottom */}
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
                 <Footer pageNumber={pageNumber} />

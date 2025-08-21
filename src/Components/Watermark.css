@@ -1,0 +1,21 @@
+.watermark-container {
+  position: absolute;
+  top: 250px;
+  left: 50px;
+  width: 1000.739px;
+  height: 1000.999px;
+  aspect-ratio: 143/98;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.watermark-svg {
+  opacity: 4;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  filter: brightness(2.5);
+}

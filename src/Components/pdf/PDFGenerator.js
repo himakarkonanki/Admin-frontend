@@ -64,11 +64,11 @@ export class PDFGenerator {
             const url = window.URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');
             link.href = url;
-            
+
             // Generate filename with timestamp
             const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
             link.download = `itinerary-pages-${timestamp}.pdf`;
-            
+
             // Trigger download
             document.body.appendChild(link);
             link.click();
@@ -127,7 +127,7 @@ export class PDFGenerator {
     static async generateHTMLContent(pages, pagesContainerRef, onProgress) {
         try {
             if (onProgress) onProgress('Generating HTML content...');
-            
+
             // Wait for all fonts and assets to load
             await document.fonts.ready;
 
@@ -137,10 +137,10 @@ export class PDFGenerator {
             for (let i = 0; i < pages.length; i++) {
                 const page = pages[i];
                 if (onProgress) onProgress(`Processing page ${i + 1}/${pages.length}: ${page.type}`);
-                
+
                 // Get the existing rendered page element from the preview
                 const existingPageElement = pagesContainerRef?.querySelector(`[data-page-id="${page.id}"]`);
-                
+
                 if (existingPageElement) {
                     // Create a simplified clone without zoom transforms
                     const cleanHTML = existingPageElement.innerHTML
@@ -149,7 +149,7 @@ export class PDFGenerator {
                         .replace(/<!--[\s\S]*?-->/g, '') // Remove comments
                         .replace(/\s+/g, ' ') // Normalize whitespace
                         .trim();
-                    
+
                     pagesHTML += `
                     <div class="pdf-page" data-page-id="${page.id}" style="
                         width: 1088px;
@@ -202,7 +202,7 @@ export class PDFGenerator {
     // Create complete HTML document with styles
     static createHTMLDocument(pagesHTML) {
         // Inline Quill snow theme CSS (minified, partial for PDF, can be extended)
-            const quillSnowCSS = `
+        const quillSnowCSS = `
                         /* Quill snow theme for .ql-editor, scoped to day pages only */
                         /* Quill formatting styles for day page PDF */
                         .pdf-page[data-page-type="day"] .ql-editor b,
@@ -370,6 +370,29 @@ export class PDFGenerator {
         }
 
         /* ===== PDF PAGE LAYOUT (MATCH PREVIEWPANE) ===== */
+        /* Watermark centering for PDF output */
+        .watermark-container {
+            position: absolute !important;
+            top: 250px;
+            left: 50px;
+            width: 1000.739px;
+            height: 1000.999px;
+            aspect-ratio: 143/98;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .watermark-svg {
+            opacity: 4;
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            filter: brightness(2.5);
+            display: block;
+            margin: 0 auto;
+        }
         .pdf-page[data-page-type="day"] {
             display: flex;
             width: 1088px;
@@ -566,65 +589,5 @@ export class PDFGenerator {
         .margin-bottom-large {
             margin-bottom: 24px !important;
         }`;
-    }
-
-    // Additional utility methods for styling
-    static getCustomPageStyles(pageType) {
-        const customStyles = {
-            cover: `
-                .cover-page {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    text-align: center;
-                }
-            `,
-            day: `
-                .day-page {
-                    padding: 20px;
-                }
-                .day-title {
-                    font-size: 24px;
-                    font-weight: 600;
-                    margin-bottom: 20px;
-                    page-break-after: avoid;
-                }
-            `,
-            policy: `
-                .policy-page {
-                    padding: 30px;
-                    font-size: 14px;
-                    line-height: 1.6;
-                }
-                .policy-section {
-                    margin-bottom: 20px;
-                    page-break-inside: avoid;
-                }
-            `,
-            thankyou: `
-                .thankyou-page {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    text-align: center;
-                    padding: 40px;
-                }
-            `
-        };
-
-        return customStyles[pageType] || '';
-    }
-
-    // Method to inject additional CSS if needed
-    static injectCustomCSS(additionalCSS) {
-        return `
-        ${this.getGlobalStyles()}
-        
-        /* ===== CUSTOM INJECTED STYLES ===== */
-        ${additionalCSS}
-        `;
     }
 }
