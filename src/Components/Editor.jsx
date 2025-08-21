@@ -71,7 +71,7 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
     fontFamily: 'Lato',
     fontSize: 20,
     fontWeight: 400,
-    padding: '6px 8px',
+    padding: '2px 8px',
     color: '#0E1328',
     outline: 'none',
     overflow: 'hidden',

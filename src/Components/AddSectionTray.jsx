@@ -20,7 +20,7 @@ const SECTION_OPTIONS = [
     { value: 'Restaurant', label: 'Restaurant', heading: 'Dining' },
     { value: 'Hotel', label: 'Hotel', heading: 'Hotel' },
     { value: 'Landmark', label: 'Activity', heading: 'Activities' },
-    { value: 'CarFront', label: 'Car', heading: 'Transfer' },
+    { value: 'CarFront', label: 'Transport', heading: 'Transport' },
     { value: 'Image', label: 'Image', heading: 'Image' },
 ];
 

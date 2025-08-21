@@ -52,7 +52,7 @@ const ICON_OPTIONS = {
 const SECTION_OPTIONS = [
     { value: 'PlaneLanding', label: 'Flight', heading: 'Arrival' },
     { value: 'Landmark', label: 'Activity', heading: 'Activities' },
-    { value: 'CarFront', label: 'Car', heading: 'Transfer' },
+    { value: 'CarFront', label: 'Transport', heading: 'Transport' },
     { value: 'Restaurant', label: 'Restaurant', heading: 'Dining' },
     { value: 'Hotel', label: 'Hotel', heading: 'Hotel' },
     { value: 'Custom', label: 'Custom', heading: 'Custom' },
@@ -129,8 +129,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     // Initialize local state from pageData
     const [localData, setLocalData] = useState({
         destination: '',
-        arrivalDetails: [''],
-        transferDetails: [''],
+    arrivalDetails: [''],
+    transportDetails: [''],
         dropDetails: [''],
         activityDetails: [''],
         uploadedImage: null,
@@ -141,25 +141,25 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
         },
         icons: {
             arrival: 'PlaneLanding',
-            transfer: 'CarFront',
+            transport: 'CarFront',
             drop: 'CarFront',
             activity: 'Landmark',
         },
         sectionHeadings: {
             arrival: 'Arrival',
-            transfer: 'Transfer',
+            transport: 'Transport',
             activity: 'Activities',
             drop: 'Drop',
         },
         dynamicSections: [],
         visibleSections: {
             arrival: true,
-            transfer: true,
+            transport: true,
             activity: true,
             drop: true
         },
-        // Unified order for all sections (main and dynamic)
-        allSectionsOrder: ['main_arrival', 'main_transfer', 'main_activity', 'main_drop']
+    // Unified order for all sections (main and dynamic)
+    allSectionsOrder: ['main_arrival', 'main_transport', 'main_activity', 'main_drop']
     });
 
     const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
@@ -211,7 +211,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                 return ensureSectionId(withArrayDetails);
             });
             // Build unified order array
-            const mainSections = (pageData.sectionOrder || ['arrival', 'transfer', 'activity', 'drop'])
+            const mainSections = (pageData.sectionOrder || ['arrival', 'transport', 'activity', 'drop'])
                 .filter(key => (pageData.visibleSections || {})[key] !== false)
                 .map(key => `main_${key}`);
             const dynamicSectionIds = dynamicSections.map(section => section.id);
@@ -220,7 +220,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
             setLocalData({
                 destination: pageData.destination || '',
                 arrivalDetails: ensureArray(pageData.arrivalDetails),
-                transferDetails: ensureArray(pageData.transferDetails),
+                transportDetails: ensureArray(pageData.transportDetails),
                 dropDetails: ensureArray(pageData.dropDetails),
                 activityDetails: ensureActivityArray(pageData.activityDetails),
                 uploadedImage: pageData.uploadedImage || null,
@@ -231,20 +231,20 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                 },
                 icons: pageData.icons || {
                     arrival: 'PlaneLanding',
-                    transfer: 'CarFront',
+                    transport: 'CarFront',
                     drop: 'CarFront',
                     activity: 'Landmark',
                 },
                 sectionHeadings: pageData.sectionHeadings || {
                     arrival: 'Arrival',
-                    transfer: 'Transfer',
+                    transport: 'Transport',
                     activity: 'Activities',
                     drop: 'Drop',
                 },
                 dynamicSections,
                 visibleSections: pageData.visibleSections || {
                     arrival: true,
-                    transfer: true,
+                    transport: true,
                     activity: true,
                     drop: true
                 },
@@ -288,7 +288,9 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
 
     const handleSubFieldChange = (sectionKey, index, value) => {
-        const fieldName = `${sectionKey}Details`;
+        // Support both 'transfer' and 'transport' for backward compatibility
+        const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
+        const fieldName = `${key}Details`;
         const newSubFields = [...localData[fieldName]];
         newSubFields[index] = value;
         updateParent({ [fieldName]: newSubFields });
@@ -304,9 +306,10 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     const handleSectionHeadingChange = (key, value) => {
+        // If the user tries to set 'transfer' to 'Transfer', force it to 'Transport'
         const updatedHeadings = {
             ...localData.sectionHeadings,
-            [key]: value
+            [key]: key === 'transfer' ? 'Transport' : value
         };
         updateParent({ sectionHeadings: updatedHeadings });
     };
@@ -349,28 +352,6 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
         updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
     };
 
-    // Function to handle deleting main sections
-    const handleDeleteMainSection = (sectionKey) => {
-        const updatedVisibleSections = {
-            ...localData.visibleSections,
-            [sectionKey]: false
-        };
-
-        // Also clear the data for the deleted section
-        const clearedData = {};
-        const fieldName = `${sectionKey}Details`;
-        clearedData[fieldName] = [''];
-
-        // Remove from allSectionsOrder
-        const sectionId = `main_${sectionKey}`;
-        const updatedOrder = localData.allSectionsOrder.filter(id => id !== sectionId);
-
-        updateParent({
-            visibleSections: updatedVisibleSections,
-            allSectionsOrder: updatedOrder,
-            ...clearedData
-        });
-    };
 
     // Handle image upload for a specific dynamic section
     const handleImageUpload = (sectionId, file, imageUrl) => {
@@ -381,8 +362,10 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     const handleIconChange = (key, iconValue, heading) => {
-        const updatedIcons = { ...localData.icons, [key]: iconValue };
-        const updatedHeadings = { ...localData.sectionHeadings, [key]: heading };
+        // Support both 'transfer' and 'transport' for backward compatibility
+        const k = key === 'transfer' ? 'transport' : key;
+        const updatedIcons = { ...localData.icons, [k]: iconValue };
+        const updatedHeadings = { ...localData.sectionHeadings, [k]: heading };
         updateParent({
             icons: updatedIcons,
             sectionHeadings: updatedHeadings
@@ -727,39 +710,42 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
 
     // Copy handler for main sections (moved out)
-    const handleCopyMainSection = (sectionKey) => {
-        const sectionTypeMap = {
-            arrival: { type: 'PlaneLanding', icon: 'PlaneLanding', heading: localData.sectionHeadings[sectionKey] || 'Arrival' },
-            transfer: { type: 'CarFront', icon: 'CarFront', heading: localData.sectionHeadings[sectionKey] || 'Transfer' },
-            activity: { type: 'Landmark', icon: 'Landmark', heading: localData.sectionHeadings[sectionKey] || 'Activities' },
-            drop: { type: 'CarFront', icon: 'CarFront', heading: localData.sectionHeadings[sectionKey] || 'Drop' },
+    const handleDeleteMainSection = (sectionKey) => {
+        // Support both 'transfer' and 'transport' for backward compatibility
+        const key = sectionKey === 'transfer' ? 'transport' : sectionKey;
+        const updatedVisibleSections = {
+            ...localData.visibleSections,
+            [key]: false
         };
-        const map = sectionTypeMap[sectionKey];
-        if (!map) return;
-        let detailsArr = [];
-        if (sectionKey === 'activity') {
-            detailsArr = localData.activityDetails.map(d => ({ value: d }));
-        } else {
-            const fieldName = `${sectionKey}Details`;
-            detailsArr = (localData[fieldName] || []).map(d => ({ value: d }));
-        }
-        const uniqueId = `dynamic_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-        const newSection = {
-            id: uniqueId,
-            type: map.type,
-            icon: map.icon,
-            heading: map.heading,
-            details: detailsArr,
-        };
-        const sectionId = `main_${sectionKey}`;
-        const orderIdx = localData.allSectionsOrder.indexOf(sectionId);
-        const updatedOrder = [
-            ...localData.allSectionsOrder.slice(0, orderIdx + 1),
-            uniqueId,
-            ...localData.allSectionsOrder.slice(orderIdx + 1)
-        ];
-        const updatedSections = [...localData.dynamicSections, newSection];
-        updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
+
+        // Also clear the data for the deleted section
+        const clearedData = {};
+        const fieldName = `${key}Details`;
+        clearedData[fieldName] = [''];
+
+        // Remove from allSectionsOrder
+        const sectionId = `main_${key}`;
+        const updatedOrder = localData.allSectionsOrder.filter(id => id !== sectionId);
+
+        updateParent({
+            visibleSections: updatedVisibleSections,
+            allSectionsOrder: updatedOrder,
+            ...clearedData
+        });
+    // The following code block was likely misplaced and is now commented out or removed for syntax correctness
+    //     icon: map.icon,
+    //     heading: map.heading,
+    //     details: detailsArr,
+    // };
+    // const sectionId = `main_${sectionKey}`;
+    // const orderIdx = localData.allSectionsOrder.indexOf(sectionId);
+    // const updatedOrder = [
+    //     ...localData.allSectionsOrder.slice(0, orderIdx + 1),
+    //     uniqueId,
+    //     ...localData.allSectionsOrder.slice(orderIdx + 1)
+    // ];
+    // const updatedSections = [...localData.dynamicSections, newSection];
+    // updateParent({ dynamicSections: updatedSections, allSectionsOrder: updatedOrder });
     };
 
     // --- Render main section as a JSX block, not a function with hooks ---
@@ -780,8 +766,14 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                 setHoveredSection={setHoveredSection}
             >
                 <div style={{ display: 'inline-flex', padding: '8px', justifyContent: 'center', alignItems: 'center', gap: '8px', borderRadius: '28px', background: 'rgba(243, 63, 63, 0.06)', position: 'relative', cursor: isPreview ? 'default' : 'pointer', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none' }} onClick={!isPreview ? () => setOpenDropdownIndex(openDropdownIndex === dropdownIndex ? null : dropdownIndex) : undefined} onDragStart={e => e.preventDefault()}>
-                    <div style={{ width: '20px', height: '20px', aspectratio: '1 / 1', userSelect: 'none' }}>
-                        <img src={ICON_OPTIONS[localData.icons[sectionKey]]} alt={sectionKey} draggable={false} onDragStart={e => e.preventDefault()} style={{ userSelect: 'none', pointerEvents: 'none' }} />
+                    <div style={{ width: '20px', height: '20px', aspectRatio: '1 / 1', userSelect: 'none' }}>
+                        <img 
+                            src={ICON_OPTIONS[localData.icons[sectionKey] || (sectionKey === 'transport' ? 'CarFront' : '')]} 
+                            alt={sectionKey} 
+                            draggable={false} 
+                            onDragStart={e => e.preventDefault()} 
+                            style={{ userSelect: 'none', pointerEvents: 'none' }} 
+                        />
                     </div>
                     {renderDropdown(sectionKey, dropdownIndex)}
                 </div>
@@ -802,7 +794,9 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     >
                         {isPreview ? (
                             <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
-                                {localData.sectionHeadings[sectionKey]}
+                                {(sectionKey === 'transport' && !localData.sectionHeadings[sectionKey])
+                                    ? 'TRANSPORT'
+                                    : localData.sectionHeadings[sectionKey]}
                             </div>
                         ) : (
                             <input
@@ -1055,10 +1049,10 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                         ))}
                                                     </div>
                                                 ));
-                                            case 'transfer':
-                                                return renderMainSection('transfer', dropdownIndex, (
+                                            case 'transport':
+                                                return renderMainSection('transport', dropdownIndex, (
                                                     <div>
-                                                        {localData.transferDetails.map((detail, detailIndex) => (
+                                                        {localData.transportDetails.map((detail, detailIndex) => (
                                                             <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
                                                                 {isPreview ? (
                                                                     detail ? (
@@ -1071,8 +1065,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                 ) : (
                                                                     <Editor
                                                                         value={detail}
-                                                                        onChange={val => handleSubFieldChange('transfer', detailIndex, val)}
-                                                                        placeholder="Enter the transfer details"
+                                                                        onChange={val => handleSubFieldChange('transport', detailIndex, val)}
+                                                                        placeholder="Enter the transport details"
                                                                         style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
                                                                     />
                                                                 )}
