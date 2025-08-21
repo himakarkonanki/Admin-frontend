@@ -287,7 +287,7 @@ const PolicyPage = React.forwardRef(function PolicyPage(
           minHeight: '150px',
           fontSize: '20px',
           lineHeight: '1.8',
-          padding: '48px 64px',
+          padding: '64px 64px',
           fontFamily: 'Lato, sans-serif',
           color: 'rgb(14, 19, 40)',
           textAlign: 'justify',

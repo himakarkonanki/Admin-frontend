@@ -950,8 +950,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     {/* Day Number */}
                     <div style={
                         isPreview
-                            ? { display: 'flex', padding: '8px 16px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
-                            : { display: 'flex', padding: '8px 0px 8px 36px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                            ? { display: 'flex', padding: '8px 20px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
+                            : { display: 'flex', padding: '8px 0px 8px 50px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
                     }>
                         <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '24px', fontStyle: 'normal', fontWeight: 500, lineHeight: '36px' }}>
                             DAY {dayNumber || 1}
@@ -961,8 +961,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     {/* Destination */}
                     <div style={
                         isPreview
-                            ? { display: 'flex', width: '960px', padding: '8px 16px', alignItems: 'center', borderRadius: '16px' }
-                            : { display: 'flex', width: '960px', padding: '8px 0px 8px 36px', alignItems: 'center', borderRadius: '16px', marginLeft: '16px' }
+                            ? { display: 'flex', width: '960px', padding: '8px 20px', alignItems: 'center', borderRadius: '16px' }
+                            : { display: 'flex', width: '960px', padding: '8px 0px 8px 50px', alignItems: 'center', borderRadius: '16px', marginLeft: '16px' }
                     }>
                         {isPreview ? (
                             <div style={{ color: localData.destination ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '36px', fontStyle: 'normal', fontWeight: 400, lineHeight: '56px', textTransform: 'capitalize', width: '920px', flexShrink: 0 }}>
@@ -997,7 +997,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     <div style={
                         isPreview
                             ? { display: 'flex', padding: '8px 16px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }
-                            : { display: 'flex', padding: '8px 0px 12px 32px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                            : { display: 'flex', padding: '8px 0px 12px 45px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
                     }>
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                             {['breakfast', 'lunch', 'dinner']
