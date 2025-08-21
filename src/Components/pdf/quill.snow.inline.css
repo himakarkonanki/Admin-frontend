@@ -1,0 +1,2 @@
+/* This file is used to inline Quill's snow theme CSS for PDF generation. */
+@import url('https://cdn.jsdelivr.net/npm/quill/dist/quill.snow.css');

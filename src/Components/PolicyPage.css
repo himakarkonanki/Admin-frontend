@@ -1,3 +1,27 @@
+/* Make add row/column icons darker and more visible */
+.tc-add-column,
+.tc-add-column svg,
+.tc-add-column * {
+  color: #0E1328 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: none !important;
+}
+.tc-add-row {
+  color: #0E1328 !important;
+  fill: #0E1328 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: none !important;
+}
+.tc-popover{
+  left:20 !important;
+  overflow: visible !important;
+}
 
 .ce-header {
   font-size: 32px !important;

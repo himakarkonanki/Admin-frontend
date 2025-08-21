@@ -1,3 +1,4 @@
+import 'quill/dist/quill.snow.css';
 export class PDFGenerator {
     // PDF generation main method
     static async generateAndDownload({ pages, pagesContainerRef, onProgress }) {
@@ -200,6 +201,28 @@ export class PDFGenerator {
 
     // Create complete HTML document with styles
     static createHTMLDocument(pagesHTML) {
+        // Inline Quill snow theme CSS (minified, partial for PDF, can be extended)
+        const quillSnowCSS = `
+        .ql-container{box-sizing:border-box;font-family:Lato,sans-serif;font-size:20px; font-weight:400;height:100%;margin:0;position:relative;}
+        .ql-editor{box-sizing:border-box;line-height:1.42;height:100%;outline:none;overflow-y:auto;padding:12px 15px;tab-size:4;-moz-tab-size:4;text-align:left;white-space:pre-wrap;word-wrap:break-word;}
+        .ql-editor > *{cursor:text;}
+        .ql-editor p,.ql-editor ol,.ql-editor pre,.ql-editor blockquote,.ql-editor h1,.ql-editor h2,.ql-editor h3,.ql-editor h4,.ql-editor h5,.ql-editor h6{margin:0;padding:0;}
+        .ql-editor table{border-collapse:collapse;}
+        .ql-editor td{border:1px solid #000;padding:2px 5px;}
+        .ql-editor ol{padding-left:1.5em;}
+        .ql-editor li{list-style-type:none;padding-left:1.5em;position:relative;}
+        .ql-editor li > .ql-ui:before{display:inline-block;margin-left:-1.5em;margin-right:.3em;text-align:right;white-space:nowrap;width:1.2em;}
+    .ql-editor li[data-list=bullet] > .ql-ui:before{content:"\\2022";}
+    .ql-editor li[data-list=checked] > .ql-ui:before{content:"\\2611";}
+    .ql-editor li[data-list=unchecked] > .ql-ui:before{content:"\\2610";}
+        .ql-editor li[data-list=ordered]{counter-increment:list-0;}
+        .ql-editor li[data-list=ordered] > .ql-ui:before{content:counter(list-0, decimal) '. ';}
+        .ql-editor .ql-align-center{text-align:center;}
+        .ql-editor .ql-align-justify{text-align:justify;}
+        .ql-editor .ql-align-right{text-align:right;}
+        .ql-editor img{max-width:100%;}
+        .ql-editor.ql-blank::before{color:rgba(0,0,0,0.6);content:attr(data-placeholder);font-style:italic;left:15px;pointer-events:none;position:absolute;right:15px;}
+        `;
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,6 +232,7 @@ export class PDFGenerator {
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         ${this.getGlobalStyles()}
+        ${quillSnowCSS}
     </style>
 </head>
 <body>
@@ -230,7 +254,6 @@ export class PDFGenerator {
             color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        
         body {
             font-family: 'Lato', sans-serif !important;
             line-height: 1.4;
@@ -240,7 +263,30 @@ export class PDFGenerator {
             padding: 0;
         }
 
-        /* ===== PDF IMAGE SECTION STYLES ===== */
+        /* ===== PDF PAGE LAYOUT (MATCH PREVIEWPANE) ===== */
+        .pdf-page[data-page-type="day"] {
+            display: flex;
+            width: 1088px;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            align-self: stretch;
+            border-radius: 0;
+            overflow: visible;
+            background: #FFF;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+        .pdf-page[data-page-type="day"]:last-child {
+            page-break-after: avoid;
+        }
+        /* PDF container for day pages */
+        .pdf-page[data-page-type="day"] > * {
+            width: 100%;
+        }
+
+        /* PDF IMAGE SECTION (for day page) */
         .pdf-image-section {
             display: flex !important;
             flex-direction: column !important;
@@ -263,38 +309,35 @@ export class PDFGenerator {
             border-radius: 16px !important;
             display: block !important;
         }
-        
-        /* ===== PAGE LAYOUT STYLES ===== */
+
+        /* ===== PAGE LAYOUT STYLES (fallback for non-day) ===== */
         .pdf-page {
             page-break-after: always;
             page-break-inside: avoid;
             overflow: visible !important;
         }
-        
-        /* Special handling for policy pages - allow content to break across pages */
         .pdf-page[data-page-id*="policy"] {
             page-break-inside: auto !important;
             min-height: auto !important;
         }
-        
         .pdf-page:last-child {
             page-break-after: avoid;
         }
-        
+
         /* ===== MEDIA ELEMENTS ===== */
         img {
             max-width: 100% !important;
             height: auto !important;
             display: block !important;
         }
-        
+
         /* ===== TABLE STYLES ===== */
         table {
             border-collapse: collapse !important;
             width: 100% !important;
             page-break-inside: avoid !important;
         }
-        
+
         /* ===== TYPOGRAPHY STYLES ===== */
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Lato', sans-serif !important;

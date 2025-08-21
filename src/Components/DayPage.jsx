@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import 'quill/dist/quill.snow.css';
+import Editor from './Editor';
 import {
     DndContext,
     closestCenter,
@@ -639,7 +641,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                     style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', marginBottom: detailIndex < section.details.length - 1 ? '0px' : '0px', borderRadius: '8px' }}
                                 >
                                     {isPreview ? (
-                                        <span
+                                        <div
                                             style={{
                                                 color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
                                                 fontFamily: 'Lato',
@@ -656,32 +658,15 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                 boxSizing: 'border-box',
                                                 padding: 0,
                                             }}
-                                        >
-                                            {detail.value}
-                                        </span>
+                                            className="ql-editor"
+                                            dangerouslySetInnerHTML={{ __html: detail.value || '' }}
+                                        />
                                     ) : (
-                                        <textarea
-                                            ref={el => {
-                                                if (el) {
-                                                    el.style.height = 'auto';
-                                                    el.style.height = el.scrollHeight + 'px';
-                                                }
-                                            }}
+                                        <Editor
                                             value={detail.value || ''}
-                                            id={getUniqueId('dynamic_section_details', `${section.id}_${detailIndex}`)}
-                                            name={getUniqueId('dynamic_section_details', `${section.id}_${detailIndex}`)}
-                                            rows={1}
-                                            onChange={e => {
-                                                handleDynamicSectionChange(section.id, 'details', { ...detail, value: e.target.value }, detailIndex);
-                                                e.target.style.height = 'auto';
-                                                e.target.style.height = e.target.scrollHeight + 'px';
-                                            }}
-                                            onInput={e => {
-                                                e.target.style.height = 'auto';
-                                                e.target.style.height = e.target.scrollHeight + 'px';
-                                            }}
+                                            onChange={val => handleDynamicSectionChange(section.id, 'details', { ...detail, value: val }, detailIndex)}
                                             placeholder={`Enter ${section.heading.toLowerCase()} details`}
-                                            style={{ color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify' }}
+                                            style={{ width: '820px', minHeight: '32px' }}
                                         />
                                     )}
                                 </div>
@@ -690,7 +675,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                             // Fallback for old format - single detail field
                             <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch', gap: '8px' }}>
                                 {isPreview ? (
-                                    <span
+                                    <div
                                         style={{
                                             color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
                                             fontFamily: 'Lato',
@@ -707,25 +692,15 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                             boxSizing: 'border-box',
                                             padding: 0,
                                         }}
-                                    >
-                                        {section.details.value}
-                                    </span>
+                                        className="ql-editor"
+                                        dangerouslySetInnerHTML={{ __html: section.details.value || '' }}
+                                    />
                                 ) : (
-                                    <textarea
+                                    <Editor
                                         value={section.details.value || ''}
-                                        id={getUniqueId('dynamic_section_details', section.id)}
-                                        name={getUniqueId('dynamic_section_details', section.id)}
-                                        onChange={e => {
-                                            handleDynamicSectionChange(section.id, 'details', { ...section.details, value: e.target.value });
-                                            e.target.style.height = 'auto';
-                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                        }}
-                                        onInput={e => {
-                                            e.target.style.height = 'auto';
-                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                        }}
+                                        onChange={val => handleDynamicSectionChange(section.id, 'details', { ...section.details, value: val })}
                                         placeholder={`Enter ${section.heading.toLowerCase()} details`}
-                                        style={{ color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', padding: 0, textAlign: 'justify' }}
+                                        
                                     />
                                 )}
                             </div>
@@ -1062,40 +1037,18 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                             <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
                                                                 {isPreview ? (
                                                                     detail ? (
-                                                                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', textAlign: 'justify' }}>
-                                                                            <span style={{
-                                                                                fontFamily: 'Lato',
-                                                                                fontSize: '20px',
-                                                                                fontStyle: 'normal',
-                                                                                fontWeight: 400,
-                                                                                width: '820px',
-                                                                                minHeight: '32px',
-                                                                                lineHeight: '32px',
-                                                                                background: 'transparent',
-                                                                                textAlign: 'justify',
-                                                                                display: 'inline-block',
-                                                                                whiteSpace: 'pre-line',
-                                                                                boxSizing: 'border-box',
-                                                                                padding: 0,
-                                                                            }}>{detail}</span>
-                                                                        </div>
+                                                                        <div
+                                                                            style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', textAlign: 'justify', width: '820px', minHeight: '32px', background: 'transparent', boxSizing: 'border-box', padding: 0 }}
+                                                                            className="ql-editor"
+                                                                            dangerouslySetInnerHTML={{ __html: detail }}
+                                                                        />
                                                                     ) : null
                                                                 ) : (
-                                                                    <textarea
-                                                                        id={getUniqueId('arrival_details', detailIndex)}
-                                                                        name={getUniqueId('arrival_details', detailIndex)}
+                                                                    <Editor
                                                                         value={detail}
-                                                                        onChange={e => {
-                                                                            handleSubFieldChange('arrival', detailIndex, e.target.value);
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
-                                                                        onInput={e => {
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
+                                                                        onChange={val => handleSubFieldChange('arrival', detailIndex, val)}
                                                                         placeholder="Enter the arrival details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', width: '820px', minHeight: '32px', padding: 0 }}
                                                                     />
                                                                 )}
                                                             </div>
@@ -1109,40 +1062,18 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                             <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
                                                                 {isPreview ? (
                                                                     detail ? (
-                                                                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0' }}>
-                                                                            <span style={{
-                                                                                fontFamily: 'Lato',
-                                                                                fontSize: '20px',
-                                                                                fontStyle: 'normal',
-                                                                                fontWeight: 400,
-                                                                                width: '820px',
-                                                                                minHeight: '32px',
-                                                                                lineHeight: '32px',
-                                                                                background: 'transparent',
-                                                                                textAlign: 'justify',
-                                                                                display: 'inline-block',
-                                                                                whiteSpace: 'pre-line',
-                                                                                boxSizing: 'border-box',
-                                                                                padding: 0,
-                                                                            }}>{detail}</span>
-                                                                        </div>
+                                                                        <div
+                                                                            className="ql-editor"
+                                                                            style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', textAlign: 'justify', width: '820px', minHeight: '32px', background: 'transparent', boxSizing: 'border-box', padding: 0 }}
+                                                                            dangerouslySetInnerHTML={{ __html: detail }}
+                                                                        />
                                                                     ) : null
                                                                 ) : (
-                                                                    <textarea
-                                                                        id={getUniqueId('transfer_details', detailIndex)}
-                                                                        name={getUniqueId('transfer_details', detailIndex)}
+                                                                    <Editor
                                                                         value={detail}
-                                                                        onChange={e => {
-                                                                            handleSubFieldChange('transfer', detailIndex, e.target.value);
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
-                                                                        onInput={e => {
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
+                                                                        onChange={val => handleSubFieldChange('transfer', detailIndex, val)}
                                                                         placeholder="Enter the transfer details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
                                                                     />
                                                                 )}
                                                             </div>
@@ -1155,41 +1086,20 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                         {localData.activityDetails.map((detail, detailIndex) => (
                                                             isPreview ? (
                                                                 detail ? (
-                                                                    <div key={detailIndex} style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', padding: '0px 0px 0px 16px', marginBottom: '8px', whiteSpace: 'pre-line' }}>
-                                                                        <span style={{
-                                                                            fontFamily: 'Lato',
-                                                                            fontSize: '20px',
-                                                                            fontStyle: 'normal',
-                                                                            fontWeight: 400,
-                                                                            width: '820px',
-                                                                            minHeight: '32px',
-                                                                            lineHeight: '32px',
-                                                                            background: 'transparent',
-                                                                            textAlign: 'justify',
-                                                                            display: 'inline-block',
-                                                                            whiteSpace: 'pre-line',
-                                                                            boxSizing: 'border-box',
-                                                                            padding: 0,
-                                                                        }}>{detail}</span>
-                                                                    </div>
+                                                                    <div
+                                                                        key={detailIndex}
+                                                                        className="ql-editor"
+                                                                        style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', padding: '0px 0px 0px 16px', marginBottom: '8px', width: '820px', minHeight: '32px', background: 'transparent', boxSizing: 'border-box' }}
+                                                                        dangerouslySetInnerHTML={{ __html: detail }}
+                                                                    />
                                                                 ) : null
                                                             ) : (
                                                                 <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
-                                                                    <textarea
-                                                                        id={getUniqueId('activity_details', detailIndex)}
-                                                                        name={getUniqueId('activity_details', detailIndex)}
+                                                                    <Editor
                                                                         value={detail}
-                                                                        onChange={e => {
-                                                                            handleSubFieldChange('activity', detailIndex, e.target.value);
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
-                                                                        onInput={e => {
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
+                                                                        onChange={val => handleSubFieldChange('activity', detailIndex, val)}
                                                                         placeholder="Enter the activity details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
                                                                     />
                                                                 </div>
                                                             )
@@ -1203,40 +1113,18 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                             <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
                                                                 {isPreview ? (
                                                                     detail ? (
-                                                                        <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0' }}>
-                                                                            <span style={{
-                                                                                fontFamily: 'Lato',
-                                                                                fontSize: '20px',
-                                                                                fontStyle: 'normal',
-                                                                                fontWeight: 400,
-                                                                                width: '820px',
-                                                                                minHeight: '32px',
-                                                                                lineHeight: '32px',
-                                                                                background: 'transparent',
-                                                                                textAlign: 'justify',
-                                                                                display: 'inline-block',
-                                                                                whiteSpace: 'pre-line',
-                                                                                boxSizing: 'border-box',
-                                                                                padding: 0,
-                                                                            }}>{detail}</span>
-                                                                        </div>
+                                                                        <div
+                                                                            className="ql-editor"
+                                                                            style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '32px', flex: '1 0 0', width: '820px', minHeight: '32px', background: 'transparent', boxSizing: 'border-box', padding: 0 }}
+                                                                            dangerouslySetInnerHTML={{ __html: detail }}
+                                                                        />
                                                                     ) : null
                                                                 ) : (
-                                                                    <textarea
-                                                                        id={getUniqueId('drop_details', detailIndex)}
-                                                                        name={getUniqueId('drop_details', detailIndex)}
+                                                                    <Editor
                                                                         value={detail}
-                                                                        onChange={e => {
-                                                                            handleSubFieldChange('drop', detailIndex, e.target.value);
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
-                                                                        onInput={e => {
-                                                                            e.target.style.height = 'auto';
-                                                                            e.target.style.height = e.target.scrollHeight + 'px';
-                                                                        }}
+                                                                        onChange={val => handleSubFieldChange('drop', detailIndex, val)}
                                                                         placeholder="Enter the drop details"
-                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, width: '820px', border: 'none', outline: 'none', background: 'transparent', resize: 'none', overflow: 'hidden', height: 'auto', boxShadow: 'none', textAlign: 'justify', padding: '0px' }}
+                                                                        style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontStyle: 'normal', fontWeight: 400, width: '820px', minHeight: '32px', padding: 0 }}
                                                                     />
                                                                 )}
                                                             </div>
