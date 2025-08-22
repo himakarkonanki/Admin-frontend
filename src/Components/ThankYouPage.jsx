@@ -376,10 +376,18 @@ const ThankYouPage = ({ pageId, pageNumber, pageData, onDataChange, isPreview = 
                         gap: '18px',
                     }}>
                         
-                        <img src={facebook} style={{width: '24px', height: '24px', aspectRatio: '7/12'}} alt="Facebook" />
-                        <img src={instagram} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="Instagram" />
-                        <img src={linkedin} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="LinkedIn" />
-                        <img src={whatsapp} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="WhatsApp" />
+                        <a href="https://www.facebook.com/people/Route-Your-Travel/61576710403556/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
+                            <img src={facebook} style={{width: '24px', height: '24px', aspectRatio: '7/12'}} alt="Facebook" />
+                        </a>
+                        <a href="https://www.instagram.com/routeyourtravel" target="_blank" rel="noopener noreferrer">
+                            <img src={instagram} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="Instagram" />
+                        </a>
+                        <a href="https://www.linkedin.com/company/route-your-travel/" target="_blank" rel="noopener noreferrer">
+                            <img src={linkedin} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="LinkedIn" />
+                        </a>
+                        <a href="https://api.whatsapp.com/send/?phone=917305173554&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+                            <img src={whatsapp} style={{width: '24px', height: '24px', aspectRatio: '1/1'}} alt="WhatsApp" />
+                        </a>
                     </div>
                 </div>
                 <div style={{

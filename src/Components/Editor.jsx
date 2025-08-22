@@ -136,7 +136,7 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
           style={{
             position: 'absolute',
             top: 32,
-            left: -18,
+            left: -20,
             zIndex: 10,
             background: '#fff',
             border: '1px solid #ccc',
@@ -151,11 +151,11 @@ const Editor = ({ value, onChange, placeholder = '', style = {} }) => {
             cursor: 'pointer',
           }}
         >
-          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('list', 'ordered')}>Ordered List</div>
-          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('list', 'bullet')}>Unordered List</div>
-          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('underline')}>Underline</div>
-          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('bold')}>Bold</div>
-          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 16, fontFamily: 'Lato', fontWeight: 400 }} tabIndex={0} onClick={() => handleFormat('italic')}>Italic</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 18, fontFamily: 'Lato', fontWeight: 500 }} tabIndex={0} onClick={() => handleFormat('list', 'ordered')}>Ordered List</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 18, fontFamily: 'Lato', fontWeight: 500 }} tabIndex={0} onClick={() => handleFormat('list', 'bullet')}>Unordered List</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 18, fontFamily: 'Lato', fontWeight: 500 }} tabIndex={0} onClick={() => handleFormat('underline')}>Underline</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 18, fontFamily: 'Lato', fontWeight: 500 }} tabIndex={0} onClick={() => handleFormat('bold')}>Bold</div>
+          <div className="custom-dropdown-option" style={{ color: '#0E1328', fontSize: 18, fontFamily: 'Lato', fontWeight: 500 }} tabIndex={0} onClick={() => handleFormat('italic')}>Italic</div>
         </div>
       )}
       <ReactQuill

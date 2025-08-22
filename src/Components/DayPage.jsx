@@ -21,7 +21,6 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 
 import deleteIcon from '../assets/icons/delete.svg'
-import closeIcon from '../assets/icons/close.svg';
 import hotel from '../assets/icons/Hotel_orange.svg'
 import fork_spoon from '../assets/icons/Restaurant_orange.svg'
 import table from '../assets/icons/table.svg'
@@ -31,7 +30,6 @@ import interest from '../assets/icons/interests.svg'
 import taxi from '../assets/icons/local_taxi.svg'
 import drag from '../assets/icons/drag_indicator_2.svg';
 import copy from '../assets/icons/content_copy.svg';
-import close from '../assets/icons/close.svg';
 import Watermark from './Watermark';
 import watermark from '../assets/icons/watermark.svg';
 
@@ -944,13 +942,15 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                 />
             )}
             {/* Main Content Area */}
-            <div style={{ display: 'flex', width: '100%', padding: '64px', flexDirection: 'column', alignItems: 'center', gap: '32px', flex: 1, paddingBottom: '0px' }}>
+            <div style={ isPreview
+            ?    {display: 'flex', width: '100%', padding: '64px', flexDirection: 'column', alignItems: 'center', gap: '32px', flex: 1, paddingBottom: '0px'} 
+               : {display: 'flex', width: '100%', padding: '64px 32px', flexDirection: 'column', alignItems: 'center', gap: '32px', flex: 1, paddingBottom: '0px'}}>
                 {/* Title Section */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'stretch' }}>
                     {/* Day Number */}
                     <div style={
                         isPreview
-                            ? { display: 'flex', padding: '8px 20px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
+                            ? { display: 'flex', padding: '8px 28px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px' }
                             : { display: 'flex', padding: '8px 0px 8px 50px', alignItems: 'center', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
                     }>
                         <div style={{ color: '#0E1328', fontFamily: 'Lato', fontSize: '24px', fontStyle: 'normal', fontWeight: 500, lineHeight: '36px' }}>
@@ -961,7 +961,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     {/* Destination */}
                     <div style={
                         isPreview
-                            ? { display: 'flex', width: '960px', padding: '8px 20px', alignItems: 'center', borderRadius: '16px' }
+                            ? { display: 'flex', width: '960px', padding: '8px 28px', alignItems: 'center', borderRadius: '16px' }
                             : { display: 'flex', width: '960px', padding: '8px 0px 8px 50px', alignItems: 'center', borderRadius: '16px', marginLeft: '16px' }
                     }>
                         {isPreview ? (
@@ -996,8 +996,8 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     {/* Meal Options */}
                     <div style={
                         isPreview
-                            ? { display: 'flex', padding: '8px 16px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }
-                            : { display: 'flex', padding: '8px 0px 12px 45px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
+                            ? { display: 'flex', padding: '8px 22px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px' }
+                            : { display: 'flex', padding: '8px 0px 12px 47px', alignItems: 'center', gap: '12px', alignSelf: 'stretch', borderRadius: '16px', marginLeft: '16px' }
                     }>
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                             {['breakfast', 'lunch', 'dinner']

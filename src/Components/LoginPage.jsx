@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import landingImage from '../assets/png/landing-image.png'; // Adjust the path as necessary
+import landingImage from '../assets/icons/SignUp.png'; // Adjust the path as necessary
 import companyLogo from '../assets/icons/companyLogo.svg'; // Adjust the path as necessary
 
 export default function LoginPage({ onLogin }) {
