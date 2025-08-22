@@ -24,6 +24,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "date-fns": "^4.1.0",
     "editorjs-multiblock-selection-plugin": "^0.1.2",
+    "editorjs-undo": "^2.0.28",
     "gh-pages": "^6.3.0",
     "quill": "^2.0.3",
     "react": "^18.2.0",

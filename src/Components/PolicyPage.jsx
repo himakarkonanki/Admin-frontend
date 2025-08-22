@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
 import './PolicyPage.css';
 import EditorJS from '@editorjs/editorjs';
+import Undo from 'editorjs-undo';
 import Header from '@editorjs/header';
 import Paragraph from '@editorjs/paragraph';
 import NestedList from '@editorjs/nested-list';
@@ -98,11 +99,10 @@ const PolicyPage = React.forwardRef(function PolicyPage(
         onReady: () => {
           console.log('Editor ready for:', editorId);
           // applyHeaderStyles(); // Removed undefined function
-          
+          new Undo({ editor });
           const container = document.getElementById(editorId);
           if (container) {
             editorContainerRef.current = container;
-            
             const handleKeydown = (e) => {
               if (
                 isHeightLimitReached &&
@@ -111,7 +111,6 @@ const PolicyPage = React.forwardRef(function PolicyPage(
                 e.preventDefault();
               }
             };
-
             const handlePaste = async (e) => {
               if (isHeightLimitReached) {
                 e.preventDefault();
@@ -119,10 +118,8 @@ const PolicyPage = React.forwardRef(function PolicyPage(
               }
               setTimeout(fixListBlockStates, 500);
             };
-
             container.addEventListener('keydown', handleKeydown);
             container.addEventListener('paste', handlePaste);
-
             // Store cleanup function on editor instance
             editor.cleanup = () => {
               container.removeEventListener('keydown', handleKeydown);
