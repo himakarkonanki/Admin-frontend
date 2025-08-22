@@ -31,8 +31,8 @@ const quillCustomStyles = `
   /* Remove list indentation in editing mode */
   .ql-editor ol,
   .ql-editor ul {
-    padding-left: 2 !important;
-    margin-left: 2 !important;
+    padding-left: 0.02em !important;
+    margin-left: 0.02em !important;
   }
   .custom-dropdown-option {
     transition: background 0.15s;

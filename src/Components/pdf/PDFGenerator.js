@@ -370,6 +370,15 @@ export class PDFGenerator {
         }
 
         /* ===== PDF PAGE LAYOUT (MATCH PREVIEWPANE) ===== */
+        /* Remove list indentation for day page rich text (force override) */
+          .ql-editor ul{
+            padding-left: 0.02em !important;
+            margin-left: 0.02em !important;
+        }
+        .ql-editor ol {
+            padding-left: 0.2em !important;
+            margin-left: 0.2em !important;
+        }
         /* Watermark centering for PDF output */
         .watermark-container {
             position: absolute !important;
