@@ -213,7 +213,8 @@ function LandingPage() {
         onDuplicatePage={duplicatePage}
         onDeletePage={deletePage}
         onReorderPages={handleReorderPages}
-        onPageClick={scrollToPage} // Add the scroll functionality
+        onPageClick={scrollToPage}
+        onLogout={typeof onLogout === 'function' ? onLogout : undefined}
       />
       <div style={{ marginLeft: '320px', flex: 1 }}>
         <RightPanel 

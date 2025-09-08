@@ -17,28 +17,27 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-
 import company from '../assets/icons/companyLogo.svg'
-import keydown from '../assets/icons/keyboard_arrow_down.svg'
+
 import drag_indicator from '../assets/icons/drag_indicator.svg'
 import add_circle from '../assets/icons/Thumbnail.svg'
 import more_vertical from '../assets/icons/more_vert.svg'
 import EditorBarForLeftPanel from './EditorBarForLeftPanel'
 import DuplicatePageTray from './DuplicatePageTray'
 import ThumbnailGenerator from './ThumbnailGenerator'
-import ThankYouImage from '../assets/icons/Thankthumbnail.svg';
+import ThankYouImage from '../assets/icons/Thankthumbnail.svg'
 
 // Sortable Item Component
-function SortablePageItem({ 
-  page, 
-  hoveredItem, 
-  setHoveredItem, 
-  handlePageMenuClick, 
-  showPageMenu, 
-  pageMenuRef, 
-  handleDuplicate, 
-  handleDelete, 
-  pages, 
+function SortablePageItem({
+  page,
+  hoveredItem,
+  setHoveredItem,
+  handlePageMenuClick,
+  showPageMenu,
+  pageMenuRef,
+  handleDuplicate,
+  handleDelete,
+  pages,
   PageThumbnail,
   onPageClick // Add this prop
 }) {
@@ -72,7 +71,6 @@ function SortablePageItem({
 
   // Handle page click for scrolling
   const handlePageItemClick = (e) => {
-    // Don't trigger scroll if clicking on drag handle or more menu
     if (e.target.closest('[data-drag-handle]') || e.target.closest('[data-more-menu]')) {
       return;
     }
@@ -97,23 +95,22 @@ function SortablePageItem({
           onMouseLeave={() => setHoveredItem(null)}
           onClick={handlePageItemClick}
         >
-          {/* Only show drag icon for day and policy pages */}
           {(page.type === 'day' || page.type === 'policy') && (
-            <div 
+            <div
               {...attributes}
               {...listeners}
               data-drag-handle="true"
-              style={{ 
-                width: '20px', 
-                height: '20px', 
+              style={{
+                width: '20px',
+                height: '20px',
                 aspectRatio: '1 / 1',
                 cursor: isDragging ? 'grabbing' : 'grab',
                 touchAction: 'none'
               }}
             >
-              <img 
-                src={drag_indicator} 
-                alt='drag-indicator' 
+              <img
+                src={drag_indicator}
+                alt='drag-indicator'
                 style={{
                   opacity: isDragging ? 1 : 0.7,
                   transition: 'opacity 0.2s ease-in-out'
@@ -121,13 +118,10 @@ function SortablePageItem({
               />
             </div>
           )}
-          {/* For cover/thankyou, add a placeholder for spacing */}
           {(page.type !== 'day' && page.type !== 'policy') && (
             <div style={{ width: '20px', height: '20px', aspectRatio: '1 / 1' }} />
           )}
-
           <PageThumbnail pageType={page.type} pageId={page.id} />
-
           <div style={{
             display: 'flex',
             padding: '0 8px',
@@ -149,8 +143,7 @@ function SortablePageItem({
                   : page.title}
             </div>
           </div>
-
-          <div 
+          <div
             data-more-menu="true"
             style={{
               width: '20px',
@@ -164,9 +157,9 @@ function SortablePageItem({
             }}
             onClick={(e) => handlePageMenuClick(page.id, page.type, e)}
           >
-            <img 
-              src={more_vertical} 
-              alt='more options' 
+            <img
+              src={more_vertical}
+              alt='more options'
               style={{
                 width: '16px',
                 height: '16px',
@@ -175,8 +168,6 @@ function SortablePageItem({
             />
           </div>
         </div>
-
-        {/* Page Menu Dropdown */}
         {showPageMenu === page.id && (
           <div
             ref={pageMenuRef}
@@ -188,7 +179,7 @@ function SortablePageItem({
               marginTop: '4px',
             }}
           >
-            <DuplicatePageTray 
+            <DuplicatePageTray
               pageId={page.id}
               pageType={page.type}
               onDuplicate={handleDuplicate}
@@ -201,15 +192,16 @@ function SortablePageItem({
   )
 }
 
-function LeftPanel({ 
-  pages, 
-  onAddPage, 
-  onDuplicatePage, 
-  onDeletePage, 
+function LeftPanel({
+  pages,
+  onAddPage,
+  onDuplicatePage,
+  onDeletePage,
   onReorderPages,
   onPageClick // Add this prop
 }) {
-  // Component to render thumbnail (now in main scope)
+  // Thumbnail logic, hooks, sensors, utilities -- unchanged...
+
   const PageThumbnail = ({ pageType, pageId }) => {
     const page = pages.find(p => p.id === pageId);
     if (pageType === 'thankyou') {
@@ -228,7 +220,7 @@ function LeftPanel({
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
           }}
         >
-          <img src={ThankYouImage} alt="Thank You" style={{ width: '250%', height: '200%', objectFit:'fill' }} />
+          <img src={ThankYouImage} alt="Thank You" style={{ width: '250%', height: '200%', objectFit: 'fill' }} />
         </div>
       );
     }
@@ -257,17 +249,24 @@ function LeftPanel({
   const dropdownRef = useRef(null)
   const pageMenuRef = useRef(null)
 
-  // Set up sensors for drag detection
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      activationConstraint: { distance: 8 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+    // Logout handler
+    const handleLogout = () => {
+      if (typeof onLogout === 'function') {
+        onLogout();
+      } else {
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        window.location.reload();
+      }
+    }
 
   const getPageItemStyle = (isHovered) => ({
     display: 'flex',
@@ -281,41 +280,28 @@ function LeftPanel({
     transition: 'all 0.2s ease-in-out',
   })
 
-  // Handle drag end
   const handleDragEnd = (event) => {
     const { active, over } = event
-
-    if (!over || active.id === over.id) {
-      return
-    }
-
+    if (!over || active.id === over.id) return
     const reorderablePages = pages.filter(page => page.type === 'day' || page.type === 'policy')
-    
     const oldIndex = reorderablePages.findIndex(page => page.id === active.id)
     const newIndex = reorderablePages.findIndex(page => page.id === over.id)
-
     if (oldIndex !== -1 && newIndex !== -1) {
       const reorderedPages = arrayMove(reorderablePages, oldIndex, newIndex)
-      
       const coverPage = pages.find(page => page.type === 'cover')
       const thankyouPage = pages.find(page => page.type === 'thankyou')
-      
       const newPages = [
         ...(coverPage ? [coverPage] : []),
         ...reorderedPages,
         ...(thankyouPage ? [thankyouPage] : [])
       ]
-
       onReorderPages(newPages)
     }
   }
 
-  // Scroll to page function with offset
   const handleScrollToPage = (pageId) => {
-    // Try to scroll to the page DOM element by id or data attribute
     const pageElement = document.getElementById(`page-${pageId}`) || document.querySelector(`[data-page-id='${pageId}']`);
     if (pageElement) {
-      // Offset for fixed headers, etc. Adjust as needed (e.g., 24 or 32)
       const offset = 0;
       const rect = pageElement.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -327,7 +313,6 @@ function LeftPanel({
     }
   };
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -337,7 +322,6 @@ function LeftPanel({
         setShowPageMenu(null)
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
@@ -350,6 +334,7 @@ function LeftPanel({
   }
 
   const handlePageTypeSelect = (pageType) => {
+        <div onClick={handleLogout} />
     onAddPage(pageType)
     setShowDropdown(false)
   }
@@ -366,13 +351,11 @@ function LeftPanel({
     onDuplicatePage(pageId)
     setShowPageMenu(null)
   }
-
   const handleDelete = (pageId) => {
     onDeletePage(pageId)
     setShowPageMenu(null)
   }
 
-  // Render static page item (for cover and thank you pages)
   const renderStaticPageItem = (pageType, title, hoverId) => {
     const page = pages.find(p => p.type === pageType);
     return (
@@ -382,10 +365,7 @@ function LeftPanel({
         onMouseLeave={() => setHoveredItem(null)}
         onClick={() => page && handleScrollToPage(page.id)}
       >
-        {/* Keep the drag indicator space but make it invisible */}
-        <div style={{ width: '20px', height: '20px', aspectRatio: '1 / 1' }}>
-          {/* No image here - just maintaining the space */}
-        </div>
+        <div style={{ width: '20px', height: '20px', aspectRatio: '1 / 1' }} />
         <PageThumbnail pageType={pageType} pageId={page ? page.id : undefined} />
         <div style={{
           display: 'flex',
@@ -409,7 +389,6 @@ function LeftPanel({
     );
   }
 
-  // Get reorderable pages and their IDs for the sortable context
   const reorderablePages = pages.filter(page => page.type === 'day' || page.type === 'policy')
   const reorderablePageIds = reorderablePages.map(page => page.id)
 
@@ -431,31 +410,27 @@ function LeftPanel({
         boxSizing: 'border-box',
       }}
     >
-    {/* Company Logo Section */}
-<div style={{
-  display: "flex",
-  height: "88px",
-  padding: "16px 32px 8px 0",
-  justifyContent: "center",
-  alignItems: "flex-start",
-  gap: "32px",
-  flexShrink: 0,
-  alignSelf: "stretch",
-  borderRadius: "16px",
-}}>
-  <img
-    src={company}
-    alt='companyLogo'
-    style={{
-      height: '60px',
-      maxWidth: '100%',
-      objectFit: 'contain',
-    }}
-  />
-</div>
-
-
-      {/* Content Section */}
+      <div style={{
+        display: "flex",
+        height: "88px",
+        padding: "16px 32px 8px 0",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        gap: "32px",
+        flexShrink: 0,
+        alignSelf: "stretch",
+        borderRadius: "16px",
+      }}>
+        <img
+          src={company}
+          alt='companyLogo'
+          style={{
+            height: '60px',
+            maxWidth: '100%',
+            objectFit: 'contain',
+          }}
+        />
+      </div>
       <div style={{
         display: "flex",
         flexDirection: "column",
@@ -463,7 +438,6 @@ function LeftPanel({
         gap: "16px",
         width: '100%',
       }}>
-        {/* Template Dropdown Section */}
         <div
           style={{
             display: "flex",
@@ -496,28 +470,8 @@ function LeftPanel({
             >
               Template
             </div>
-            {/* <div
-              style={{
-                width: "20px",
-                height: "20px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img
-                src={keydown}
-                alt='keyboard down arrow'
-                style={{
-                  width: "20px",
-                  height: "20px",
-                }}
-              />
-            </div> */}
           </div>
         </div>
-
-        {/* Divider */}
         <div style={{
           height: '1px',
           alignSelf: 'stretch',
@@ -525,8 +479,6 @@ function LeftPanel({
           background: 'rgba(255, 255, 255, 0.08)',
           width: '100%',
         }}></div>
-
-        {/* Pages Section */}
         <div
           style={{
             display: 'flex',
@@ -534,8 +486,7 @@ function LeftPanel({
             flexDirection: 'column',
             alignItems: 'flex-start',
             gap: '8px',
-          }}
-        >
+          }}>
           <div
             style={{
               color: 'rgba(255, 255, 255, 0.70)',
@@ -550,48 +501,55 @@ function LeftPanel({
             Pages
           </div>
 
-          {/* Cover Page - Only show if exists (static, non-draggable) */}
-          {pages.some(page => page.type === 'cover') && 
-            renderStaticPageItem('cover', 'Cover Page', 'cover')
-          }
-
-          {/* Drag and Drop Context for reorderable pages */}
-          <DndContext 
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+          {/* ================ BEGIN SCROLLABLE CONTAINER ================ */}
+          <div
+            className="pages-scroll-container"
+            style={{
+              width: '100%',
+              maxHeight: '204px', // Approx. 4 page items + spacing, tweak as needed
+              overflowY: pages.length > 4 ? 'auto' : 'visible',
+              marginBottom: '8px',
+              transition: 'max-height 0.2s',
+            }}
           >
-            <SortableContext 
-              items={reorderablePageIds} 
-              strategy={verticalListSortingStrategy}
+            {pages.some(page => page.type === 'cover') &&
+              renderStaticPageItem('cover', 'Cover Page', 'cover')
+            }
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              <div style={{ width: '100%' }}>
-                {reorderablePages.map((page) => (
-                  <SortablePageItem
-                    key={page.id}
-                    page={page}
-                    hoveredItem={hoveredItem}
-                    setHoveredItem={setHoveredItem}
-                    handlePageMenuClick={handlePageMenuClick}
-                    showPageMenu={showPageMenu}
-                    pageMenuRef={pageMenuRef}
-                    handleDuplicate={handleDuplicate}
-                    handleDelete={handleDelete}
-                    pages={pages}
-                    PageThumbnail={PageThumbnail}
-                    onPageClick={handleScrollToPage}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={reorderablePageIds}
+                strategy={verticalListSortingStrategy}
+              >
+                <div style={{ width: '100%' }}>
+                  {reorderablePages.map((page) => (
+                    <SortablePageItem
+                      key={page.id}
+                      page={page}
+                      hoveredItem={hoveredItem}
+                      setHoveredItem={setHoveredItem}
+                      handlePageMenuClick={handlePageMenuClick}
+                      showPageMenu={showPageMenu}
+                      pageMenuRef={pageMenuRef}
+                      handleDuplicate={handleDuplicate}
+                      handleDelete={handleDelete}
+                      pages={pages}
+                      PageThumbnail={PageThumbnail}
+                      onPageClick={handleScrollToPage}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+            {pages.some(page => page.type === 'thankyou') &&
+              renderStaticPageItem('thankyou', 'Thank You Page', 'thankyou')
+            }
+          </div>
+          {/* ================ END SCROLLABLE CONTAINER ================ */}
 
-          {/* Thank You Page - Only show if exists (static, non-draggable) */}
-          {pages.some(page => page.type === 'thankyou') && 
-            renderStaticPageItem('thankyou', 'Thank You Page', 'thankyou')
-          }
-
-          {/* Add Page Section */}
           <div
             ref={dropdownRef}
             style={{
@@ -643,8 +601,6 @@ function LeftPanel({
                 </div>
               </div>
             </div>
-
-            {/* Dropdown Menu */}
             {showDropdown && (
               <div
                 style={{
@@ -660,7 +616,37 @@ function LeftPanel({
             )}
           </div>
         </div>
+
       </div>
+      <button
+        type="button"
+        style={{
+          display: 'flex',
+          height: '54px',
+          padding: '12px 20px',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '20px',
+          alignSelf: 'stretch',
+          borderRadius: '24px',
+          background: '#F33F3F',
+          cursor: 'pointer'
+        }}
+        onClick={handleLogout}
+      >
+        <div style={{
+          color: 'var(--White, #FFF)',
+          textAlign: 'center',
+          fontFamily: 'Lato',
+          fontSize: '20px',
+          fontStyle: 'normal',
+          fontWeight: 600,
+          lineHeight: '20px', /* 125% */
+        }}>
+          Log out
+        </div>
+      </button>
+
     </div>
   )
 }

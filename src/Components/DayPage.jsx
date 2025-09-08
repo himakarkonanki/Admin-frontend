@@ -58,6 +58,41 @@ const SECTION_OPTIONS = [
     { value: 'Custom', label: 'Custom', heading: 'Custom' },
 ];
 
+// Default state to ensure all inputs are always controlled
+const DEFAULT_STATE = {
+    destination: '',
+    arrivalDetails: [''],
+    transportDetails: [''],
+    dropDetails: [''],
+    activityDetails: [''],
+    uploadedImage: null,
+    mealSelections: {
+        breakfast: false,
+        lunch: false,
+        dinner: false
+    },
+    icons: {
+        arrival: 'PlaneLanding',
+        transport: 'CarFront',
+        drop: 'CarFront',
+        activity: 'Landmark',
+    },
+    sectionHeadings: {
+        arrival: 'Arrival',
+        transport: 'Transport',
+        activity: 'Activities',
+        drop: 'Drop',
+    },
+    dynamicSections: [],
+    visibleSections: {
+        arrival: true,
+        transport: true,
+        activity: true,
+        drop: true
+    },
+    allSectionsOrder: ['main_arrival', 'main_transport', 'main_activity', 'main_drop']
+};
+
 // Sortable Section Component
 function SortableSection({ section, children, isPreview, hoveredSection, setHoveredSection }) {
     const {
@@ -126,42 +161,8 @@ function SortableSection({ section, children, isPreview, hoveredSection, setHove
 }
 
 function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate, dayNumber }) {
-    // Initialize local state from pageData
-    const [localData, setLocalData] = useState({
-        destination: '',
-        arrivalDetails: [''],
-        transportDetails: [''],
-        dropDetails: [''],
-        activityDetails: [''],
-        uploadedImage: null,
-        mealSelections: {
-            breakfast: false,
-            lunch: false,
-            dinner: false
-        },
-        icons: {
-            arrival: 'PlaneLanding',
-            transport: 'CarFront',
-            drop: 'CarFront',
-            activity: 'Landmark',
-        },
-        sectionHeadings: {
-            arrival: 'Arrival',
-            transport: 'Transport',
-            activity: 'Activities',
-            drop: 'Drop',
-        },
-        dynamicSections: [],
-        visibleSections: {
-            arrival: true,
-            transport: true,
-            activity: true,
-            drop: true
-        },
-        // Unified order for all sections (main and dynamic)
-        allSectionsOrder: ['main_arrival', 'main_transport', 'main_activity', 'main_drop']
-    });
-
+    // Initialize local state with default values to ensure controlled inputs
+    const [localData, setLocalData] = useState(DEFAULT_STATE);
 
     const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
     const [hoveredSection, setHoveredSection] = useState(null);
@@ -213,41 +214,38 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
             });
             // Build unified order array
             const mainSections = (pageData.sectionOrder || ['arrival', 'transport', 'activity', 'drop'])
-                .filter(key => (pageData.visibleSections || {})[key] !== false)
+                .filter(key => (pageData.visibleSections || DEFAULT_STATE.visibleSections)[key] !== false)
                 .map(key => `main_${key}`);
             const dynamicSectionIds = dynamicSections.map(section => section.id);
             // If pageData has a saved allSectionsOrder, use it, else default to main sections then dynamic
             const allSectionsOrder = pageData.allSectionsOrder || [...mainSections, ...dynamicSectionIds];
+            
             setLocalData({
+                // Always provide fallback values to ensure controlled inputs
                 destination: pageData.destination || '',
                 arrivalDetails: ensureArray(pageData.arrivalDetails),
                 transportDetails: ensureArray(pageData.transportDetails),
                 dropDetails: ensureArray(pageData.dropDetails),
                 activityDetails: ensureActivityArray(pageData.activityDetails),
                 uploadedImage: pageData.uploadedImage || null,
-                mealSelections: pageData.mealSelections || {
+                mealSelections: {
                     breakfast: false,
                     lunch: false,
-                    dinner: false
+                    dinner: false,
+                    ...(pageData.mealSelections || {})
                 },
-                icons: pageData.icons || {
-                    arrival: 'PlaneLanding',
-                    transport: 'CarFront',
-                    drop: 'CarFront',
-                    activity: 'Landmark',
+                icons: {
+                    ...DEFAULT_STATE.icons,
+                    ...(pageData.icons || {})
                 },
-                sectionHeadings: pageData.sectionHeadings || {
-                    arrival: 'Arrival',
-                    transport: 'Transport',
-                    activity: 'Activities',
-                    drop: 'Drop',
+                sectionHeadings: {
+                    ...DEFAULT_STATE.sectionHeadings,
+                    ...(pageData.sectionHeadings || {})
                 },
                 dynamicSections,
-                visibleSections: pageData.visibleSections || {
-                    arrival: true,
-                    transport: true,
-                    activity: true,
-                    drop: true
+                visibleSections: {
+                    ...DEFAULT_STATE.visibleSections,
+                    ...(pageData.visibleSections || {})
                 },
                 allSectionsOrder
             });
@@ -289,12 +287,12 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
 
     const handleSubFieldChange = (sectionKey, index, value) => {
-    // Always use 'transport' for section keys
-    const key = sectionKey;
-    const fieldName = `${key}Details`;
-    const newSubFields = [...localData[fieldName]];
-    newSubFields[index] = value;
-    updateParent({ [fieldName]: newSubFields });
+        // Always use 'transport' for section keys
+        const key = sectionKey;
+        const fieldName = `${key}Details`;
+        const newSubFields = [...localData[fieldName]];
+        newSubFields[index] = value;
+        updateParent({ [fieldName]: newSubFields });
     };
 
     // Handle meal toggle
@@ -308,7 +306,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
     const handleSectionHeadingChange = (key, value) => {
         // Always use 'transport' for section keys
-    const k = key;
+        const k = key;
         const updatedHeadings = {
             ...localData.sectionHeadings,
             [k]: value
@@ -365,7 +363,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
 
     const handleIconChange = (key, iconValue, heading) => {
         // Always use 'transport' for section keys
-    const k = key;
+        const k = key;
         const updatedIcons = { ...localData.icons, [k]: iconValue };
         const updatedHeadings = { ...localData.sectionHeadings, [k]: heading };
         updateParent({
@@ -515,12 +513,12 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                     >
                         {isPreview ? (
                             <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
-                                {section.heading}
+                                {section.heading || ''}
                             </div>
                         ) : (
                             <input
                                 type="text"
-                                value={section.heading}
+                                value={section.heading || ''}
                                 id={getUniqueId('dynamic_section_heading', section.id)}
                                 name={getUniqueId('dynamic_section_heading', section.id)}
                                 onChange={(e) => handleDynamicSectionChange(section.id, 'heading', e.target.value)}
@@ -630,7 +628,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                     {isPreview ? (
                                         <div
                                             style={{
-                                                color: detail.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
+                                                color: (detail && detail.value) ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
                                                 fontFamily: 'Lato',
                                                 fontSize: '20px',
                                                 fontStyle: 'normal',
@@ -646,13 +644,13 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                 padding: 0,
                                             }}
                                             className="ql-editor"
-                                            dangerouslySetInnerHTML={{ __html: detail.value || '' }}
+                                            dangerouslySetInnerHTML={{ __html: (detail && detail.value) || '' }}
                                         />
                                     ) : (
                                         <Editor
-                                            value={detail.value || ''}
-                                            onChange={val => handleDynamicSectionChange(section.id, 'details', { ...detail, value: val }, detailIndex)}
-                                            placeholder={`Enter ${section.heading.toLowerCase()} details`}
+                                            value={(detail && detail.value) || ''}
+                                            onChange={val => handleDynamicSectionChange(section.id, 'details', { ...(detail || {}), value: val }, detailIndex)}
+                                            placeholder={`Enter ${(section.heading || '').toLowerCase()} details`}
                                             style={{ width: '820px', minHeight: '32px', fontStyle: 'normal' }}
                                         />
                                     )}
@@ -664,7 +662,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                 {isPreview ? (
                                     <div
                                         style={{
-                                            color: section.details.value ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
+                                            color: (section.details && section.details.value) ? '#0E1328' : 'rgba(14, 19, 40, 0.24)',
                                             fontFamily: 'Lato',
                                             fontSize: '20px',
                                             fontStyle: 'normal',
@@ -680,13 +678,13 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                             padding: 0,
                                         }}
                                         className="ql-editor"
-                                        dangerouslySetInnerHTML={{ __html: section.details.value || '' }}
+                                        dangerouslySetInnerHTML={{ __html: (section.details && section.details.value) || '' }}
                                     />
                                 ) : (
                                     <Editor
-                                        value={section.details.value || ''}
-                                        onChange={val => handleDynamicSectionChange(section.id, 'details', { ...section.details, value: val })}
-                                        placeholder={`Enter ${section.heading.toLowerCase()} details`}
+                                        value={(section.details && section.details.value) || ''}
+                                        onChange={val => handleDynamicSectionChange(section.id, 'details', { ...(section.details || {}), value: val })}
+                                        placeholder={`Enter ${(section.heading || '').toLowerCase()} details`}
                                         style={{ fontStyle: 'normal' }}
                                     />
                                 )}
@@ -716,10 +714,10 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     // Copy handler for main sections (moved out)
     // Duplicate main section (copy handler)
     const handleCopyMainSection = (sectionKey) => {
-    // Only allow duplication for main sections that are visible
-    if (!localData.visibleSections[sectionKey]) return;
-    const key = sectionKey;
-    const fieldName = `${key}Details`;
+        // Only allow duplication for main sections that are visible
+        if (!localData.visibleSections[sectionKey]) return;
+        const key = sectionKey;
+        const fieldName = `${key}Details`;
 
         // Convert main section details (array of strings) to dynamic section details (array of { value })
         let detailsArr = [];
@@ -731,11 +729,11 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
             detailsArr = [{ value: '' }];
         }
 
-    // Deep copy heading and icon (with fallback for transport)
-    const heading = localData.sectionHeadings[key] || key.charAt(0).toUpperCase() + key.slice(1);
-    let icon = localData.icons[key];
-    if (!icon && key === 'transport') icon = 'CarFront';
-    const type = key.charAt(0).toUpperCase() + key.slice(1);
+        // Deep copy heading and icon (with fallback for transport)
+        const heading = localData.sectionHeadings[key] || key.charAt(0).toUpperCase() + key.slice(1);
+        let icon = localData.icons[key];
+        if (!icon && key === 'transport') icon = 'CarFront';
+        const type = key.charAt(0).toUpperCase() + key.slice(1);
 
         // Generate a new dynamic section with the same content
         const uniqueId = `dynamic_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -759,7 +757,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
     };
     const handleDeleteMainSection = (sectionKey) => {
         // Always use 'transport' for section keys
-    const key = sectionKey;
+        const key = sectionKey;
         const updatedVisibleSections = {
             ...localData.visibleSections,
             [key]: false
@@ -831,14 +829,14 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                             <div style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0' }}>
                                 {(sectionKey === 'transport' && !localData.sectionHeadings[sectionKey])
                                     ? 'TRANSPORT'
-                                    : localData.sectionHeadings[sectionKey]}
+                                    : (localData.sectionHeadings[sectionKey] || '')}
                             </div>
                         ) : (
                             <input
                                 type="text"
                                 id={getUniqueId(`${sectionKey}_heading`)}
                                 name={getUniqueId(`${sectionKey}_heading`)}
-                                value={localData.sectionHeadings[sectionKey]}
+                                value={localData.sectionHeadings[sectionKey] || ''}
                                 onChange={(e) => handleSectionHeadingChange(sectionKey, e.target.value)}
                                 style={{ color: 'rgba(14, 19, 40, 0.64)', fontFamily: 'Lato', fontSize: '20px', fontStyle: 'normal', fontWeight: 600, lineHeight: '32px', textTransform: 'uppercase', flex: '1 0 0', border: 'none', outline: 'none', background: 'transparent', minWidth: '0' }}
                             />
@@ -1080,7 +1078,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                     ) : null
                                                                 ) : (
                                                                     <Editor
-                                                                        value={detail}
+                                                                        value={detail || ''}
                                                                         onChange={val => handleSubFieldChange('arrival', detailIndex, val)}
                                                                         placeholder="Enter the arrival details"
                                                                         style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontWeight: 400, lineHeight: '32px', width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
@@ -1105,7 +1103,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                     ) : null
                                                                 ) : (
                                                                     <Editor
-                                                                        value={detail}
+                                                                        value={detail || ''}
                                                                         onChange={val => handleSubFieldChange('transport', detailIndex, val)}
                                                                         placeholder="Enter the transport details"
                                                                         style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20, fontWeight: 400, width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
@@ -1131,7 +1129,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                             ) : (
                                                                 <div key={detailIndex} style={{ display: 'flex', padding: '0px 0px 0px 16px', alignItems: 'center', alignSelf: 'stretch' }}>
                                                                     <Editor
-                                                                        value={detail}
+                                                                        value={detail || ''}
                                                                         onChange={val => handleSubFieldChange('activity', detailIndex, val)}
                                                                         placeholder="Enter the activity details"
                                                                         style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20,  fontWeight: 400, width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}
@@ -1156,7 +1154,7 @@ function DayPage({ pageId, pageNumber, pageData, isPreview = false, onDataUpdate
                                                                     ) : null
                                                                 ) : (
                                                                     <Editor
-                                                                        value={detail}
+                                                                        value={detail || ''}
                                                                         onChange={val => handleSubFieldChange('drop', detailIndex, val)}
                                                                         placeholder="Enter the drop details"
                                                                         style={{ color: detail ? '#0E1328' : 'rgba(14, 19, 40, 0.24)', fontFamily: 'Lato', fontSize: 20,  fontWeight: 400, width: '820px', minHeight: '32px', padding: 0, fontStyle: 'normal' }}

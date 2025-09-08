@@ -12,7 +12,12 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  return isAuthenticated ? <LandingPage /> : <LoginPage onLogin={handleLogin} />;
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+  };
+  return isAuthenticated ? <LandingPage onLogout={handleLogout} /> : <LoginPage onLogin={handleLogin} />;
 }
 
 createRoot(document.getElementById('root')).render(

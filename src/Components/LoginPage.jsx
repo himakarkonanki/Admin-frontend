@@ -188,6 +188,7 @@ export default function LoginPage({ onLogin }) {
                 alignSelf: 'stretch',
                 borderRadius: '24px',
                 background: '#F33F3F',
+                cursor: 'pointer',
               }}><div style={{
                 color: 'var(--White, #FFF)',
                 textAlign: 'center',
