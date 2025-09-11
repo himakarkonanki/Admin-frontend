@@ -6,10 +6,12 @@ export default function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
       const response = await fetch(import.meta.env.VITE_LOGIN_API_URL, {
         method: 'POST',
@@ -25,6 +27,8 @@ export default function LoginPage({ onLogin }) {
       }
     } catch (err) {
       setError('Network error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -188,19 +192,37 @@ export default function LoginPage({ onLogin }) {
                 alignSelf: 'stretch',
                 borderRadius: '24px',
                 background: '#F33F3F',
-                cursor: 'pointer',
-              }}><div style={{
-                color: 'var(--White, #FFF)',
-                textAlign: 'center',
-                fontFamily: 'Lato',
-                fontSize: '20px',
-                fontStyle: 'normal',
-                fontWeight: 600,
-                lineHeight: '20px' /* 125% */
-              }}>
-
-                  Login
-                </div></button>
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1
+              }} disabled={loading}>
+                {loading ? (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                  }}>
+                    <svg style={{ marginRight: 8 }} width="24" height="24" viewBox="0 0 50 50">
+                      <circle cx="25" cy="25" r="20" stroke="#FFF" strokeWidth="5" fill="none" strokeDasharray="31.4 31.4" strokeDashoffset="0">
+                        <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+                      </circle>
+                    </svg>
+                    <span style={{ color: 'var(--White, #FFF)', fontFamily: 'Lato', fontSize: '20px', fontWeight: 600 }}>Logging in...</span>
+                  </div>
+                ) : (
+                  <div style={{
+                    color: 'var(--White, #FFF)',
+                    textAlign: 'center',
+                    fontFamily: 'Lato',
+                    fontSize: '20px',
+                    fontStyle: 'normal',
+                    fontWeight: 600,
+                    lineHeight: '20px' /* 125% */
+                  }}>
+                    Login
+                  </div>
+                )}
+              </button>
             </form>
           </div>
         </div>
