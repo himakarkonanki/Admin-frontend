@@ -44,15 +44,18 @@ const PolicyPage = React.forwardRef(function PolicyPage(
         }
       });
       // Only call render if there are list blocks and NOT table blocks
-      if (hasListBlocks && !hasTableBlocks) {
-        setTimeout(async () => {
-          try {
-            await editorInstanceRef.current.render(savedData);
-          } catch (error) {
-            console.error('Error re-rendering after paste:', error);
-          }
-        }, 100);
-      }
+      // Prevent cursor jumping by not calling render after paste
+      // If you need to fix list block states, do it without re-rendering the whole editor
+      // Remove the setTimeout and render call below:
+      // if (hasListBlocks && !hasTableBlocks) {
+      //   setTimeout(async () => {
+      //     try {
+      //       await editorInstanceRef.current.render(savedData);
+      //     } catch (error) {
+      //       console.error('Error re-rendering after paste:', error);
+      //     }
+      //   }, 100);
+      // }
     } catch (error) {
       console.error('Error fixing list states:', error);
     }
