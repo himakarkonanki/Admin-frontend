@@ -618,9 +618,11 @@ function LeftPanel({
         </div>
 
       </div>
+      <div style={{ flexGrow: 1 }} />
       <button
         type="button"
         style={{
+          width: '100%',
           display: 'flex',
           height: '54px',
           padding: '12px 20px',
@@ -630,7 +632,9 @@ function LeftPanel({
           alignSelf: 'stretch',
           borderRadius: '24px',
           background: '#F33F3F',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          boxShadow: '0 -2px 8px rgba(0,0,0,0.08)',
+          marginBottom: 0
         }}
         onClick={handleLogout}
       >
@@ -641,7 +645,7 @@ function LeftPanel({
           fontSize: '20px',
           fontStyle: 'normal',
           fontWeight: 600,
-          lineHeight: '20px', /* 125% */
+          lineHeight: '20px',
         }}>
           Log out
         </div>
