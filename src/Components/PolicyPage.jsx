@@ -31,22 +31,23 @@ const PolicyPage = React.forwardRef(function PolicyPage(
   // Fix list block states after pasting
   const fixListBlockStates = async () => {
     if (!editorInstanceRef.current) return;
-    
     try {
       const savedData = await editorInstanceRef.current.saver.save();
       let hasListBlocks = false;
-      
+      let hasTableBlocks = false;
       savedData.blocks.forEach(block => {
         if (block.type === 'list') {
           hasListBlocks = true;
         }
+        if (block.type === 'table') {
+          hasTableBlocks = true;
+        }
       });
-
-      if (hasListBlocks) {
+      // Only call render if there are list blocks and NOT table blocks
+      if (hasListBlocks && !hasTableBlocks) {
         setTimeout(async () => {
           try {
             await editorInstanceRef.current.render(savedData);
-            // setTimeout(applyHeaderStyles, 100); // Removed undefined function
           } catch (error) {
             console.error('Error re-rendering after paste:', error);
           }
