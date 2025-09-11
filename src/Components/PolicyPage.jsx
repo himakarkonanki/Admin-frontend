@@ -1,301 +1,382 @@
-import React, { useEffect, useRef, useState, useImperativeHandle } from 'react';
-import './PolicyPage.css';
-import EditorJS from '@editorjs/editorjs';
-import Undo from 'editorjs-undo';
-import Header from '@editorjs/header';
-import Paragraph from '@editorjs/paragraph';
-import NestedList from '@editorjs/nested-list';
-import Table from '@editorjs/table';
+import React from 'react';
 import Footer from './Footer';
+import Watermark from './Watermark';
+import watermark from '../assets/icons/watermark.svg';
 
-const PolicyPage = React.forwardRef(function PolicyPage(
-  { onDataUpdate, initialData, pageNumber = 1, pageId },
-  ref
-) {
-  const editorInstanceRef = useRef(null);
-  const editorContainerRef = useRef(null);
-  const isInitializingRef = useRef(false);
-  const [isHeightLimitReached, setIsHeightLimitReached] = useState(false);
-  
-  const editorId = `editorjs-policy-${pageId || pageNumber || Date.now()}`;
+function PolicyPagePreview({ data, pageNumber, isPDFMode = false }) {
+  console.log('PolicyPagePreview received data:', data);
+  if (!data) return <div>No policy data available.</div>;
 
-  // Check if content height exceeds container height
-  const checkHeightLimit = () => {
-    const container = editorContainerRef.current;
-    if (!container) return false;
-    const limitReached = container.scrollHeight >= container.clientHeight - 10;
-    setIsHeightLimitReached(limitReached);
-    return limitReached;
-  };
+  const getInlineStyles = () => ({
+    container: {
+      width: '1088px',
+      minHeight: '1540px',
+      backgroundColor: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    // contentWrapper: {
+    //   flex: 1,
+    //   marginTop: '32px',
+    //   marginBottom: '32px',
+    //   border: 'none',
+    //   padding: '16px',
+    //   borderRadius: '4px',
+    //   backgroundColor: '#fff',
+    //   position: 'relative',
+    //   minHeight: '200px',
+    //   height: 'auto',
+    // },
+    contentArea: {
+        height: '100%',
+            maxHeight: '1400px',
+            minHeight: '150px',
+            fontSize: '20px',
+            lineHeight: '1.8',
+            padding: '64px 64px',
+            fontFamily: 'Lato, sans-serif',
+            color: 'rgb(14, 19, 40)',
+            textAlign: 'justify',
+            overflow:'hidden',
+            position: 'relative',
+    },
 
-  // Fix list block states after pasting
-  const fixListBlockStates = async () => {
-    if (!editorInstanceRef.current) return;
-    
-    try {
-      const savedData = await editorInstanceRef.current.saver.save();
-      let hasListBlocks = false;
-      
-      savedData.blocks.forEach(block => {
-        if (block.type === 'list') {
-          hasListBlocks = true;
-        }
-      });
+    // tables
+    table: {
+      borderCollapse: 'collapse',
+      width: '100%',
+      margin: '16px 0',
+      border: 'none',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      display: 'table',
+      position: 'relative',
+      clear: 'both',
+      fontFamily: 'Lato, sans-serif',
+      backgroundColor: '#fff',
+      pageBreakInside: 'avoid',
+      WebkitPrintColorAdjust: 'exact',
+      colorAdjust: 'exact',
+    },
+    headerCell: {
+      backgroundColor: 'rgb(14, 19, 40)',
+      color: '#ffffff',
+      fontWeight: '600',
+      fontFamily: 'Lato, sans-serif',
+      fontSize: '20px',
+      padding: '12px',
+      border: 'none',
+      textAlign: 'left',
+      minHeight: '44px',
+      verticalAlign: 'top',
+      WebkitPrintColorAdjust: 'exact',
+      colorAdjust: 'exact',
+    },
+    dataCell: {
+      backgroundColor: '#ffffff',
+      color: 'rgb(14, 19, 40)',
+      fontFamily: 'Lato, sans-serif',
+      fontWeight: '400',
+      fontSize: '20px',
+      padding: '12px 8px 12px 12px',
+      border: 'none',
+      textAlign: 'left',
+      minHeight: '44px',
+      verticalAlign: 'top',
+      WebkitPrintColorAdjust: 'exact',
+      colorAdjust: 'exact',
+    },
+    evenRowCell: {
+      backgroundColor: '#f9fafb',
+      color: 'rgb(14, 19, 40)',
+      fontFamily: 'Lato, sans-serif',
+      fontWeight: '400',
+      fontSize: '20px',
+      padding: '12px 8px 12px 12px',
+      border: 'none',
+      textAlign: 'left',
+      minHeight: '44px',
+      verticalAlign: 'top',
+      WebkitPrintColorAdjust: 'exact',
+      colorAdjust: 'exact',
+    },
 
-      if (hasListBlocks) {
-        setTimeout(async () => {
-          try {
-            await editorInstanceRef.current.render(savedData);
-            // setTimeout(applyHeaderStyles, 100); // Removed undefined function
-          } catch (error) {
-            console.error('Error re-rendering after paste:', error);
-          }
-        }, 100);
-      }
-    } catch (error) {
-      console.error('Error fixing list states:', error);
-    }
-  };
+    // lists
+    listBase: {
+      margin: '16px 0',
+      paddingLeft: '24px',
+      fontSize: '20px',
+      lineHeight: '1.6',
+      fontFamily: 'Lato, sans-serif',
+      color: 'rgb(14, 19, 40)',
+      whiteSpace: 'normal',
+    },
+    listUl: { listStyleType: 'disc' },
+    listOl: { listStyleType: 'decimal' },
+    listItem: {
+      marginBottom: '8px',
+      fontSize: '20px',
+      lineHeight: '1.6',
+      fontFamily: 'Lato, sans-serif',
+      color: 'rgb(14, 19, 40)',
+    },
 
-  // Cleanup function
-  const cleanupEditor = () => {
-    if (editorInstanceRef.current) {
-      try {
-        if (editorInstanceRef.current.cleanup) {
-          editorInstanceRef.current.cleanup();
-        }
-        if (editorInstanceRef.current.destroy) {
-          editorInstanceRef.current.destroy();
-        }
-      } catch (error) {
-        console.error('Error destroying editor:', error);
-      } finally {
-        editorInstanceRef.current = null;
-        isInitializingRef.current = false;
-      }
-    }
-  };
 
-  // Initialize editor
-  const initializeEditor = async () => {
-    // Prevent multiple initializations
-    if (isInitializingRef.current || editorInstanceRef.current) {
-      return;
-    }
 
-    isInitializingRef.current = true;
+    // headers / paragraph
+    h1: { fontSize: '32px', fontWeight: '700', lineHeight: '1.2', margin: '24px 0 16px', color: 'rgb(14, 19, 40)', fontFamily: 'Lato, sans-serif' },
+    h2: { fontSize: '28px', fontWeight: '600', lineHeight: '1.3', margin: '20px 0 14px', color: 'rgb(14, 19, 40)', fontFamily: 'Lato, sans-serif' },
+    h3: { fontSize: '24px', fontWeight: '600', lineHeight: '1.4', margin: '18px 0 12px', color: 'rgb(14, 19, 40)', fontFamily: 'Lato, sans-serif' },
+    h4: { fontSize: '22px', fontWeight: '600', lineHeight: '1.4', margin: '16px 0 10px', color: 'rgb(14, 19, 40)', fontFamily: 'Lato, sans-serif' },
+    paragraph: { marginBottom: '16px', fontSize: '20px', lineHeight: '1.6', fontFamily: 'Lato, sans-serif', color: 'rgb(14, 19, 40)' },
 
-    // Clear any existing content in the holder
-    const holder = document.getElementById(editorId);
-    if (holder) {
-      holder.innerHTML = '';
-    }
+    quoteCaption: { fontSize: '16px', color: '#6b7280', fontFamily: 'Lato, sans-serif', fontStyle: 'normal', marginTop: '8px' },
 
-    try {
-      const editor = new EditorJS({
-        holder: editorId,
-        autofocus: true,
-        
-        onReady: () => {
-          console.log('Editor ready for:', editorId);
-          // applyHeaderStyles(); // Removed undefined function
-          new Undo({ editor });
-          const container = document.getElementById(editorId);
-          if (container) {
-            editorContainerRef.current = container;
-            const handleKeydown = (e) => {
-              if (
-                isHeightLimitReached &&
-                !['Backspace', 'Delete', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)
-              ) {
-                e.preventDefault();
-              }
-            };
-            const handlePaste = async (e) => {
-              if (isHeightLimitReached) {
-                e.preventDefault();
-                return;
-              }
-              setTimeout(fixListBlockStates, 500);
-            };
-            container.addEventListener('keydown', handleKeydown);
-            container.addEventListener('paste', handlePaste);
-            // Store cleanup function on editor instance
-            editor.cleanup = () => {
-              container.removeEventListener('keydown', handleKeydown);
-              container.removeEventListener('paste', handlePaste);
-            };
-          }
-          isInitializingRef.current = false;
-        },
+    noData: { color: '#9CA3AF', fontStyle: 'italic', fontSize: '20px', fontFamily: 'Lato, sans-serif' }
+  });
 
-        onChange: async () => {
-          // setTimeout(applyHeaderStyles, 0); // Removed undefined function
-          
-          try {
-            const savedData = await editor.saver.save();
-            
-            if (onDataUpdate) {
-              const fields = [];
-              let fieldId = 1;
+  const styles = getInlineStyles();
 
-              savedData.blocks.forEach(block => {
-                if (block.type === 'header') {
-                  fields.push({
-                    id: fieldId++,
-                    type: 'title',
-                    content: block.data.text,
-                    level: block.data.level || 1,
-                  });
-                } else if (block.type === 'paragraph') {
-                  fields.push({
-                    id: fieldId++,
-                    type: 'details',
-                    content: block.data.text,
-                  });
-                } else if (block.type === 'list') {
-                  fields.push({
-                    id: fieldId++,
-                    type: 'list',
-                    content: block.data.items,
-                    style: block.data.style || 'unordered',
-                    meta: block.data.meta || {},
-                  });
-                } else if (block.type === 'table') {
-                  fields.push({
-                    id: fieldId++,
-                    type: 'table',
-                    content: block.data.content,
-                    hasHeaders: block.data.withHeadings !== false,
-                  });
-                }
-              });
-
-              onDataUpdate({
-                title: 'Terms & Conditions',
-                fields,
-                blocks: savedData.blocks,
-              });
-            }
-          } catch (error) {
-            console.error('Error saving editor data:', error);
-          }
-
-          checkHeightLimit();
-        },
-
-        tools: {
-          header: {
-            class: Header,
-            config: {
-              placeholder: 'Enter a section title...',
-              levels: [1],
-              defaultLevel: 1,
-            },
-          },
-          paragraph: {
-            class: Paragraph,
-            config: {
-              placeholder: '',
-            },
-          },
-          list: {
-            class: NestedList,
-            config: {
-              defaultStyle: 'unordered',
-            },
-          },
-          table: {
-            class: Table,
-            config: {
-              rows: 4,
-              cols: 2,
-              withHeadings: true,
-            },
-          },
-        },
-
-        data: {
-          blocks: initialData?.blocks || [],
-        },
-      });
-
-      editorInstanceRef.current = editor;
-
-    } catch (error) {
-      console.error('Error initializing editor:', error);
-      isInitializingRef.current = false;
-    }
-  };
-
-  useEffect(() => {
-    // Add a small delay to ensure DOM is ready
-    const timeoutId = setTimeout(() => {
-      initializeEditor();
-    }, 100);
-
-    return () => {
-      clearTimeout(timeoutId);
-      cleanupEditor();
-    };
-  }, []); // Remove initialData dependency to prevent re-initialization
-
-  // Handle initial data changes separately
-  useEffect(() => {
-    if (editorInstanceRef.current && initialData?.blocks) {
-      editorInstanceRef.current.render({ blocks: initialData.blocks }).then(() => {
-  // setTimeout(applyHeaderStyles, 100); // Removed undefined function
-      }).catch(error => {
-        console.error('Error rendering initial data:', error);
-      });
-    }
-  }, [initialData]);
-
-  useImperativeHandle(ref, () => ({
-    restorePageData: (page) => {
-      if (editorInstanceRef.current && page?.blocks) {
-        editorInstanceRef.current.render({ blocks: page.blocks }).then(() => {
-          // setTimeout(applyHeaderStyles, 100); // Removed undefined function
-        }).catch(error => {
-          console.error('Error restoring page data:', error);
+  const renderBlock = (block, index) => {
+    switch (block.type) {
+      case 'header': {
+        const level = block.data.level || 1;
+        const HeaderTag = `h${level}`;
+        const headerStyle = styles[`h${level}`] || styles.h1;
+        return React.createElement(HeaderTag, {
+          key: index,
+          style: headerStyle,
+          dangerouslySetInnerHTML: { __html: block.data.text || '' }
         });
       }
-    },
-  }));
+
+      case 'paragraph':
+        return (
+          <div
+            key={index}
+            style={styles.paragraph}
+            dangerouslySetInnerHTML={{ __html: block.data.text || '' }}
+          />
+        );
+
+      case 'list': {
+        const listStyle = block.data.style || 'unordered';
+        
+        // Handle checklist separately
+        if (listStyle === 'checklist') {
+          const items = block.data.items || [];
+          return (
+            <div key={index} style={styles.checklistContainer}>
+              {items.map((item, i) => {
+                const isChecked = !!item.checked;
+                const itemText = typeof item === 'string' ? item : (item.text || item.content || '');
+                return (
+                  <div key={i} style={styles.checklistItem}>
+                    <div style={isChecked ? styles.checkedBox : styles.checkbox}>
+                      {isChecked && '✓'}
+                    </div>
+                    <span dangerouslySetInnerHTML={{ __html: itemText }} />
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
+        
+        // Handle regular lists (ordered/unordered)
+        const ListTag = listStyle === 'ordered' ? 'ol' : 'ul';
+        const listStyleFix = listStyle === 'ordered' ? styles.listOl : styles.listUl;
+        // Inline style fix for ordered list number alignment
+        const orderedListInlineFix = listStyle === 'ordered' ? {
+          paddingLeft: '2.5em',
+          listStylePosition: 'outside',
+        } : {};
+        return (
+          <ListTag
+            key={index}
+            style={{ ...styles.listBase, ...listStyleFix, ...orderedListInlineFix }}
+          >
+            {(block.data.items || []).map((item, i) => {
+              // Nested list support for nested-list plugin
+              if (typeof item === 'object' && item.items && Array.isArray(item.items)) {
+                return (
+                  <li key={i} style={styles.listItem}>
+                    <span dangerouslySetInnerHTML={{ __html: item.content || item.text || '' }} />
+                    <ListTag style={{ ...styles.listBase, ...listStyleFix, ...orderedListInlineFix }}>
+                      {item.items.map((subItem, j) => (
+                        <li key={j} style={styles.listItem}>
+                          <span dangerouslySetInnerHTML={{ __html: subItem.content || subItem.text || '' }} />
+                        </li>
+                      ))}
+                    </ListTag>
+                  </li>
+                );
+              }
+              return (
+                <li key={i} style={styles.listItem}>
+                  <span dangerouslySetInnerHTML={{ __html: item.content || item.text || item || '' }} />
+                </li>
+              );
+            })}
+          </ListTag>
+        );
+      }
+
+      case 'table': {
+        const tableData = block.data.content || [];
+        const withHeadings = block.data.withHeadings !== false;
+        if (!tableData.length) return null;
+
+        return (
+          <table key={index} style={styles.table}>
+            {withHeadings ? (
+              <>
+                <thead>
+                  <tr>
+                    {tableData[0].map((cell, ci) => (
+                      <th key={ci} style={styles.headerCell}>
+                        <span style={{ color: '#fff', fontWeight: '600', display: 'block', WebkitPrintColorAdjust: 'exact', colorAdjust: 'exact' }}>
+                          {cell && cell.trim() !== '' ? cell : `Column ${ci + 1}`}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.slice(1).map((row, ri) => (
+                    <tr key={ri}>
+                      {row.map((cell, ci) => (
+                        <td key={ci} style={ri % 2 === 0 ? styles.dataCell : styles.evenRowCell}>
+                          <span style={{ color: 'rgb(14, 19, 40)', fontWeight: '400', display: 'block' }}>
+                            {cell && cell.trim() !== '' ? cell : '\u00A0'}
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </>
+            ) : (
+              <tbody>
+                {tableData.map((row, ri) => (
+                  <tr key={ri}>
+                    {row.map((cell, ci) => (
+                      <td
+                        key={ci}
+                        style={ri === 0 ? styles.headerCell : (ri % 2 === 1 ? styles.dataCell : styles.evenRowCell)}
+                      >
+                        <span
+                          style={{
+                            color: ri === 0 ? '#ffffff' : 'rgb(14, 19, 40)',
+                            fontWeight: ri === 0 ? '600' : '400',
+                            display: 'block',
+                            WebkitPrintColorAdjust: 'exact',
+                            colorAdjust: 'exact'
+                          }}
+                        >
+                          {cell && cell.trim() !== '' ? cell : (ri === 0 ? `Column ${ci + 1}` : '\u00A0')}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            )}
+          </table>
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div
-      style={{
-        width: '1088px',
-        minHeight: '1540px',
-        backgroundColor: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        boxSizing: 'border-box',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        id={editorId}
-        ref={editorContainerRef}
-        style={{
-          height: '100%',
-          maxHeight: '1400px',
-          minHeight: '150px',
-          fontSize: '20px',
-          lineHeight: '1.8',
-          padding: '64px 64px',
-          fontFamily: 'Lato, sans-serif',
-          color: 'rgb(14, 19, 40)',
-          textAlign: 'justify',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      />
+    <div style={styles.container}>
+  {/* Watermark for preview and PDF mode */}
+  <Watermark svgSrc={watermark} />
+      {/* <div style={styles.contentWrapper}> */}
+        <div style={styles.contentArea}>
+          {data.blocks && data.blocks.length > 0 ? (
+            data.blocks.map((block, i) => renderBlock(block, i))
+          ) : data.fields && data.fields.length > 0 ? (
+            // legacy fallback
+            data.fields.map(field => {
+              if (field.type === 'title') {
+                const level = field.level || 1;
+                const HeaderTag = `h${level}`;
+                const headerStyle = styles[`h${level}`] || styles.h1;
+                return React.createElement(HeaderTag, { key: field.id, style: headerStyle, dangerouslySetInnerHTML: { __html: field.content } });
+              } else if (field.type === 'details') {
+                return <div key={field.id} style={styles.paragraph} dangerouslySetInnerHTML={{ __html: field.content }} />;
+              } else if (field.type === 'table') {
+                return (
+                  <table key={field.id} style={styles.table}>
+                    <tbody>
+                      {field.content.map((row, i) => (
+                        <tr key={i}>
+                          {row.map((cell, j) => (
+                            <td key={j} style={i === 0 ? styles.headerCell : (i % 2 === 1 ? styles.dataCell : styles.evenRowCell)}>
+                              <span
+                                style={{
+                                  color: i === 0 ? '#ffffff' : 'rgb(14, 19, 40)',
+                                  fontWeight: i === 0 ? '600' : '400',
+                                  display: 'block',
+                                  WebkitPrintColorAdjust: 'exact',
+                                  colorAdjust: 'exact'
+                                }}
+                              >
+                                {cell && cell.trim() !== '' ? cell : (i === 0 ? `Column ${j + 1}` : '\u00A0')}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                );
+              } else if (field.type === 'list') {
+                const ListTag = field.style === 'ordered' ? 'ol' : 'ul';
+                const listItems = Array.isArray(field.content)
+                  ? field.content.map(item => (typeof item === 'string' ? item : (item.content || item.text || item.value || ''))).filter(Boolean)
+                  : [];
+                return (
+                  <ListTag
+                    key={field.id}
+                    style={{ ...styles.listBase, ...(field.style === 'ordered' ? styles.listOl : styles.listUl) }}
+                  >
+                    {listItems.map((item, idx) => (
+                      <li key={idx} style={styles.listItem} dangerouslySetInnerHTML={{ __html: item }} />
+                    ))}
+                  </ListTag>
+                );
+              } else if (field.type === 'checklist') {
+                const items = field.content || [];
+                return (
+                  <div key={field.id} style={styles.checklistContainer}>
+                    {items.map((it, i) => (
+                      <div key={i} style={styles.checklistItem}>
+                        <div style={it.checked ? styles.checkedBox : styles.checkbox}>{it.checked && '✓'}</div>
+                        <span dangerouslySetInnerHTML={{ __html: it.text || '' }} />
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
+            })
+          ) : (
+            <div style={styles.noData}>No policy details provided.</div>
+          )}
+        </div>
       
+
       <Footer pageNumber={pageNumber} />
     </div>
   );
-});
+}
 
-export default PolicyPage;
+export default PolicyPagePreview;
