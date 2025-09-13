@@ -59,14 +59,14 @@ function SortablePageItem({
 
   const getPageItemStyle = (isHovered) => ({
     display: 'flex',
-    width: isHovered ? '288px' : '100%',
+    width: '100%',
     padding: '4px 4px 4px 0',
     alignItems: 'center',
     alignSelf: 'stretch',
-    borderRadius: isHovered ? '12px' : '0',
-    background: isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-    cursor: isDragging ? 'grabbing' : 'pointer',
-    transition: 'all 0.2s ease-in-out',
+    borderRadius: '0',
+    background: 'transparent',
+    cursor: 'pointer',
+    transition: 'none',
   })
 
   // Handle page click for scrolling
@@ -270,14 +270,14 @@ function LeftPanel({
 
   const getPageItemStyle = (isHovered) => ({
     display: 'flex',
-    width: isHovered ? '288px' : '100%',
+    width: '100%',
     padding: '4px 4px 4px 0',
     alignItems: 'center',
     alignSelf: 'stretch',
-    borderRadius: isHovered ? '12px' : '0',
-    background: isHovered ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+    borderRadius: '0',
+    background: 'transparent',
     cursor: 'pointer',
-    transition: 'all 0.2s ease-in-out',
+    transition: 'none',
   })
 
   const handleDragEnd = (event) => {
@@ -392,6 +392,31 @@ function LeftPanel({
   const reorderablePages = pages.filter(page => page.type === 'day' || page.type === 'policy')
   const reorderablePageIds = reorderablePages.map(page => page.id)
 
+  // Inject custom CSS for a white scrollbar
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = `
+      .pages-scroll-container::-webkit-scrollbar {
+        width: 8px;
+        height: 0px;
+      }
+      .pages-scroll-container::-webkit-scrollbar-thumb {
+        background: #e0e0e0;
+        border-radius: 4px;
+      }
+      .pages-scroll-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .pages-scroll-container {
+        overflow-x: hidden !important;
+      }
+    `;
+    document.head.appendChild(styleTag);
+    return () => {
+      document.head.removeChild(styleTag);
+    };
+  }, []);
+
   return (
     <div
       style={{
@@ -502,16 +527,16 @@ function LeftPanel({
           </div>
 
           {/* ================ BEGIN SCROLLABLE CONTAINER ================ */}
-          <div
-            className="pages-scroll-container"
-            style={{
-              width: '100%',
-              maxHeight: '204px', // Approx. 4 page items + spacing, tweak as needed
-              overflowY: pages.length > 4 ? 'auto' : 'visible',
-              marginBottom: '8px',
-              transition: 'max-height 0.2s',
-            }}
-          >
+           <div
+             className="pages-scroll-container"
+             style={{
+               width: '100%',
+               maxHeight: pages.length > 4 ? '204px' : 'none',
+               overflowY: pages.length > 4 ? 'auto' : 'visible',
+               marginBottom: '8px',
+               transition: 'max-height 0.2s',
+             }}
+           >
             {pages.some(page => page.type === 'cover') &&
               renderStaticPageItem('cover', 'Cover Page', 'cover')
             }
