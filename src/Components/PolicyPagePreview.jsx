@@ -154,6 +154,10 @@ function PolicyPagePreview({ data, pageNumber, isPDFMode = false }) {
       }
 
       case 'paragraph':
+        if (!block.data.text || block.data.text.trim() === '') {
+          // Render empty space for blank paragraphs
+          return <div key={index} style={{ height: '16px' }} />;
+        }
         return (
           <div
             key={index}
